@@ -1,8 +1,8 @@
 import numpy as np
 import scipy
 import scipy.linalg
-import plotly.graph_objs as go
-import plotly.express as px
+#import plotly.graph_objs as go
+#import plotly.express as px
 
 class CMA_ES_Active:
         
@@ -132,10 +132,10 @@ def optimize_active(func, x0, sigma, maxfevals = 1000000, popsize = None, weight
             print(f"Iteration {cntr:5d}: {res[-1][1]}")
     return res
 
-def optimize_and_plot_active(f, sigma = 1, d = 10, popsize = None):
-    x0 = np.repeat(10.0, d)
-    res = optimize_active(f, x0, sigma, popsize = popsize)
-    print(f"Best: {res[-1][0]}, value: {res[-1][1]}")
-    y = np.array([nd for st, nd in res])
-    fig = px.line(x = np.arange(y.shape[0]) + 1, y = y)
-    fig.show()
+#def optimize_and_plot_active(f, sigma = 1, d = 10, popsize = None):
+#    x0 = np.repeat(10.0, d)
+#    res = optimize_active(f, x0, sigma, popsize = popsize)
+#    print(f"Best: {res[-1][0]}, value: {res[-1][1]}")
+#    y = np.array([nd for st, nd in res])
+#    fig = px.line(x = np.arange(y.shape[0]) + 1, y = y)
+#    fig.show()
