@@ -1,3 +1,4 @@
+from games.pong import Game
 from games.pong_gym import PongGame
 from lib.cma_es import CMA_ES_Active
 from lib.activator_funcs import sigmoid
@@ -25,9 +26,10 @@ topology = [(6, sigmoid), (3, sigmoid)]
 cma_es = CMA_ES_Active(np.zeros(calc_weight_count(6, topology)), 1.0)
 games = [PongGame() for i in range(_threads)]
 
-generation = 1
+generation = 260
 
-while not cma_es.terminate():
+while not cma_es.terminate():   
+    generation += 1
     print('Generation:', generation)
     population = cma_es.sample()
 
@@ -44,7 +46,7 @@ while not cma_es.terminate():
     f_eval = np.concatenate(tuple(results))
     print(f_eval)
     cma_es.update(population, f_eval)
-    generation += 1
+ 
 
     if generation % 10 == 0:
         save_obj(cma_es, generation, 'models/cmaes_pong_v4')

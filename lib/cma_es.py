@@ -113,8 +113,8 @@ class CMA_ES_Active:
         """Zakoncz algorytm"""
         if self.counteval <= 0:
             return False
-        if self.counteval >= self.maxfevals:
-            return True
+        # if self.counteval >= self.maxfevals:
+            # return True
         if self.condition_number > 1e10:
             return True
         if self.sigma * np.max(self.eigen_values)**0.5 < 1e-10:
