@@ -6,8 +6,9 @@ from lib.fixed_top_nn import FixedTopologyNeuralNetwork
 from lib.utilities import save_obj, load_obj, calc_weight_count
 import numpy as np
 import threading
+import pygame
 
-_threads = 16
+_threads = 8
 
 class pongThread(threading.Thread):
     def __init__(self, id, output, population, input_size, topology):
@@ -19,14 +20,14 @@ class pongThread(threading.Thread):
         self.output = output
 
     def run(self):
-        print('running {0}'.format(self.id))
+        # print('running {0}'.format(self.id))
         self.output[self.id] = -np.array([games[self.id].play(FixedTopologyNeuralNetwork(self.input_size, self.topology, ind)) for ind in self.population])
 
-topology = [(6, sigmoid), (3, sigmoid)]
-cma_es = CMA_ES_Active(np.zeros(calc_weight_count(6, topology)), 1.0)
-games = [PongGame() for i in range(_threads)]
+topology = [(6, sigmoid), (3, sigmoid), (1, sigmoid)]
+cma_es = CMA_ES_Active(np.zeros(calc_weight_count(6, topology)), 1.0, popsize=32)
+games = [Game() for i in range(_threads)]
 
-generation = 260
+generation = 0
 
 while not cma_es.terminate():   
     generation += 1
@@ -49,5 +50,6 @@ while not cma_es.terminate():
  
 
     if generation % 10 == 0:
-        save_obj(cma_es, generation, 'models/cmaes_pong_v4')
+        save_obj(cma_es, generation, 'models/cmaes_pong_v5')
+        games[0].play_sample_game(FixedTopologyNeuralNetwork(6, topology, cma_es.sample()[0]))
 
