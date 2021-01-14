@@ -6,6 +6,27 @@ from pygame.locals import *
 import numpy as np
 import pickle
 
+def botBob(state):
+    myX, othX, bX, bY, bDX, bDY = state
+    if bDY > 0:
+        if myX < 400:
+            return 1
+        else:
+            return -1
+    
+    if bX > 400:
+        if myX - 30 < bX:
+            return 1
+        if myX - 30 > bX:
+            return -1
+        return 0
+    else:
+        if myX + 30 < bX:
+            return 1
+        if myX + 30 > bX:
+            return -1
+        return 0
+
 class Game:
     class State(IntEnum):
         IN_PROGRES = 0
@@ -14,14 +35,13 @@ class Game:
     
     def __init__(self):
         pygame.init()
-        screen = pygame.display.set_mode((1000, 1000))
+        pygame.display.set_mode((1000, 1000))
         pygame.display.set_caption('Pong NN')
-
+        self.board = pygame.Surface((800, 800)).convert()
         self.init_game()
     
     def init_game(self):
         self.state = Game.State.IN_PROGRES
-        self.board = pygame.Surface((800, 800)).convert()
 
         self.ball = Ball(self)
         self.pads = [Pad(self, 0), Pad(self, self.board.get_height())]
@@ -40,14 +60,14 @@ class Game:
         # print("game won by", new_state)
     
     def getGameState(self):
-        return self.pads[0].pos.centerx, self.pads[1].pos.centerx, self.ball.pos.centerx, self.ball.pos.centery
+        return self.pads[0].pos.centerx, self.pads[1].pos.centerx, self.ball.pos.centerx, self.ball.pos.centery, self.ball.dx, self.ball.dy
     
     def getGameStateRev(self):
-        return self.pads[1].pos.centerx, self.pads[0].pos.centerx, self.ball.pos.centerx, self.board.get_height() - self.ball.pos.centery
+        return self.pads[1].pos.centerx, self.pads[0].pos.centerx, self.ball.pos.centerx, self.board.get_height() - self.ball.pos.centery, self.ball.dx, -self.ball.dy
 
   
-    def play_two_bots(self, inp1, inp2, draw=False, MAX_ROUNDS=10**4, fps=30):
-        self.__init__()
+    def play_two_bots(self, inp1, inp2, draw=False, MAX_ROUNDS=10**4):
+        self.init_game()
 
         clock = pygame.time.Clock()
 
@@ -55,9 +75,9 @@ class Game:
         rounds = 0
         while self.state == Game.State.IN_PROGRES and rounds < MAX_ROUNDS:
             rounds += 1
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    return
+            # for event in pygame.event.get():
+            #     if event.type == QUIT:
+            #         return
 
             # keys = pygame.key.get_pressed()
             
@@ -68,7 +88,7 @@ class Game:
             # print(self.getGameState())
 
             if draw:
-                clock.tick(fps)
+                clock.tick(100)
                 self.draw(pygame.display.get_surface())
                 pygame.display.flip()
             
@@ -77,35 +97,19 @@ class Game:
     def play(self, NN):
         score = 0
         for i in range(10):
-            rounds, win = self.play_two_bots(bot, get_NN_bot(NN))
+            rounds, win = self.play_two_bots(get_NN_bot(NN), botBob)
             if win == Game.State.WIN_TOP:
-                score +=  3 * 10**4 - rounds
+                score += 30000 - rounds + abs(self.pads[1].pos.centerx - self.ball.pos.centerx)
             if win == Game.State.WIN_BOT:
-                score +=  rounds
+                score += rounds - abs(self.pads[0].pos.centerx - self.ball.pos.centerx)
             if win == Game.State.IN_PROGRES:
-                score +=  10**4 + rounds
-        return score / (10**4) / 10
-
-    def play_two(self, NN, NN2):
-        score = 0
-        for i in range(10):
-            rounds, win = self.play_two_bots(get_NN_bot(NN), get_NN_bot(NN2))
-            if win == Game.State.WIN_TOP:
-                score +=  3 * 10**4 - rounds
-            if win == Game.State.WIN_BOT:
-                score +=  rounds
-            if win == Game.State.IN_PROGRES:
-                score +=  10**4 + rounds
+                score += 5000 + rounds
         return score / (10**4) / 10
 
     def play_sample_game(self, NN):
-        self.play_two_bots(get_NN_bot(NN), bot, draw=True, MAX_ROUNDS=2000)
-    
-    def play_sample_game_two(self, NN, NN2):
-        self.play_two_bots(get_NN_bot(NN), get_NN_bot(NN2), draw=True, MAX_ROUNDS=2000)
+        self.play_two_bots(get_NN_bot(NN), botBob, draw=True, MAX_ROUNDS=2000)
 
-    def play_with_NN(self, NN,):
-        NN_bot = get_NN_bot(NN)
+    def play_with_bot(self, bot=botBob):
         self.__init__()
 
         clock = pygame.time.Clock()
@@ -120,17 +124,22 @@ class Game:
 
             keys = pygame.key.get_pressed()
             
-            self.pads[0].move(NN_bot(self.getGameState()))
-            self.pads[1].move(inp1(keys))
+            self.pads[0].move(inp1(keys))
+            self.pads[1].move(bot(self.getGameStateRev()))
 
             self.ball.move()
             # print(self.getGameState())
 
             clock.tick(30)
+            print(self.getGameState(), self.ball.speed)
             self.draw(pygame.display.get_surface())
             pygame.display.flip()
             
         return rounds, self.state
+
+    def play_with_NN(self, NN):
+        self.play_with_bot(get_NN_bot(NN))
+
 
 
 
@@ -141,10 +150,15 @@ class Ball:
         self.angle = math.pi / 2
         self.speed = 15
         self.game = game
+        self.dx = math.cos(self.angle) * self.speed
+        self.dy = -math.sin(self.angle) * self.speed
 
     def move(self):
-        self.pos = self.pos.move(math.cos(self.angle) * self.speed, -math.sin(self.angle) * self.speed)
+        self.dx = math.cos(self.angle) * self.speed
+        self.dy = -math.sin(self.angle) * self.speed
+        self.pos = self.pos.move(self.dx, self.dy)
         self.speed += 1 / 500
+
       
         if self.pos.left < 0:   
             self.pos.left = -self.pos.left
@@ -155,7 +169,7 @@ class Ball:
             self.angle = math.atan2(math.sin(self.angle), -math.cos(self.angle))
 
         if self.pos.top < self.game.pads[0].pos.bottom:
-            diff = (self.pos.centerx - self.game.pads[0].pos.centerx) / (self.game.pads[0].pos.width / 2)
+            diff = (self.pos.centerx - self.game.pads[0].pos.centerx) / (self.game.pads[0].pos.width + self.pos.width) * 2
 
             if diff > 1 or diff < -1:
                 self.game.setState(Game.State.WIN_BOT)
@@ -165,7 +179,7 @@ class Ball:
                 self.pos.top += 2 * (self.game.pads[0].pos.bottom - self.pos.top)
 
         if self.pos.bottom > self.game.pads[1].pos.top:
-            diff = (self.pos.centerx - self.game.pads[1].pos.centerx) / (self.game.pads[1].pos.width / 2)
+            diff = (self.pos.centerx - self.game.pads[1].pos.centerx) / (self.game.pads[1].pos.width + self.pos.width) * 2
 
             if diff > 1 or diff < -1:
                 self.game.setState(Game.State.WIN_TOP)
@@ -213,7 +227,7 @@ def inp2(keys):
     return 0
 
 def bot(state):
-    myX, othX, bX, bY = state
+    myX, othX, bX, bY, bDX, bDY = state
     if bX > 400:
         if myX - 30 < bX:
             return 1
@@ -235,7 +249,9 @@ def get_NN_bot(NN):
         else:
             return -1
     def fun(state):
-        state = np.array(state) / 800
+        state = np.array(state)
+        state[:4] /= 800 #positions
+        state[4:6] /= 35 #speed
         return make_move(NN.eval(state))
         
     return fun

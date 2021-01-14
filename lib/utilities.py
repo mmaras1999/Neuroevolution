@@ -12,8 +12,12 @@ def save_obj(obj, gen, path):
     pickle.dump(obj, file)
     file.close()
 
-def load_obj(path):
-    pass
+def load_obj(gen, path):
+    path = os.path.join(path, '{0}.obj'.format(gen))
+    file = open(path, 'rb') 
+    obj = pickle.load(file)
+    file.close()
+    return obj
 
 def calc_weight_count(input, topology):
     res = (input + 1) * topology[0][0]
