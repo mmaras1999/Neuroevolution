@@ -13,6 +13,7 @@ The following libraries are necessary to run the project:
 * OpenAI Gym v.0.18.0
 * OpenAI Gym Atari v.0.2.6
 * MatPlotLib v.3.3.2
+* Pygame v.2.0.1
 
 The project was tested on Python3 v.3.8.5
 
