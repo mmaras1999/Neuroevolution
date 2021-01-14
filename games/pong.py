@@ -6,6 +6,27 @@ from pygame.locals import *
 import numpy as np
 import pickle
 
+def botBob(state):
+    myX, othX, bX, bY, bDX, bDY = state
+    if bDY > 0:
+        if myX < 400:
+            return 1
+        else:
+            return -1
+    
+    if bX > 400:
+        if myX - 30 < bX:
+            return 1
+        if myX - 30 > bX:
+            return -1
+        return 0
+    else:
+        if myX + 30 < bX:
+            return 1
+        if myX + 30 > bX:
+            return -1
+        return 0
+
 class Game:
     class State(IntEnum):
         IN_PROGRES = 0
@@ -45,7 +66,7 @@ class Game:
         return self.pads[1].pos.centerx, self.pads[0].pos.centerx, self.ball.pos.centerx, self.board.get_height() - self.ball.pos.centery, self.ball.dx, -self.ball.dy
 
   
-    def play_two_bots(self, inp1, inp2, draw=False, MAX_ROUNDS=10**4, fps=30):
+    def play_two_bots(self, inp1, inp2, draw=False, MAX_ROUNDS=10**4):
         self.init_game()
 
         clock = pygame.time.Clock()
@@ -67,7 +88,7 @@ class Game:
             # print(self.getGameState())
 
             if draw:
-                clock.tick(fps)
+                clock.tick(100)
                 self.draw(pygame.display.get_surface())
                 pygame.display.flip()
             
@@ -76,7 +97,7 @@ class Game:
     def play(self, NN):
         score = 0
         for i in range(10):
-            rounds, win = self.play_two_bots(get_NN_bot(NN), bot)
+            rounds, win = self.play_two_bots(get_NN_bot(NN), botBob)
             if win == Game.State.WIN_TOP:
                 score += 30000 - rounds + abs(self.pads[1].pos.centerx - self.ball.pos.centerx)
             if win == Game.State.WIN_BOT:
@@ -86,10 +107,9 @@ class Game:
         return score / (10**4) / 10
 
     def play_sample_game(self, NN):
-        self.play_two_bots(get_NN_bot(NN), bot, draw=True, MAX_ROUNDS=2000)
+        self.play_two_bots(get_NN_bot(NN), botBob, draw=True, MAX_ROUNDS=2000)
 
-    def play_with_NN(self, NN,):
-        NN_bot = get_NN_bot(NN)
+    def play_with_bot(self, bot=botBob):
         self.__init__()
 
         clock = pygame.time.Clock()
@@ -104,17 +124,22 @@ class Game:
 
             keys = pygame.key.get_pressed()
             
-            self.pads[0].move(NN_bot(self.getGameState()))
-            self.pads[1].move(inp1(keys))
+            self.pads[0].move(inp1(keys))
+            self.pads[1].move(bot(self.getGameStateRev()))
 
             self.ball.move()
             # print(self.getGameState())
 
             clock.tick(30)
+            print(self.getGameState(), self.ball.speed)
             self.draw(pygame.display.get_surface())
             pygame.display.flip()
             
         return rounds, self.state
+
+    def play_with_NN(self, NN):
+        self.play_with_bot(get_NN_bot(NN))
+
 
 
 

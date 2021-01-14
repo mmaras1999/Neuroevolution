@@ -10,8 +10,9 @@ import pickle
 
 # 4 input neurons, 1 hidden layer with 4 neurons, 1 output neuron -- weights + biases = 25
 topology = [(6, sigmoid), (3, sigmoid), (1, sigmoid)]
-cma_es = load_obj(110, 'models/cmaes_pong_v5')
+cma_es = load_obj(1000, 'models/cmaes_pong_v6')
 game = Game()
 
 game.play_with_NN(FixedTopologyNeuralNetwork(6, topology, cma_es.sample()[0]))
+# game.play_with_bot()
 

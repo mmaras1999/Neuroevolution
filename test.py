@@ -26,9 +26,11 @@ class pongThread(Process):
 
 topology = [(6, sigmoid), (3, sigmoid), (1, sigmoid)]
 cma_es = CMA_ES_Active(np.zeros(calc_weight_count(6, topology)), 1.0, popsize=32)
-games = [Game() for i in range(_processes)]
+
+games = [PongGame() for i in range(_processes)]
 
 generation = 0
+cma_es = load_obj(1000, 'models/cmaes_pong_v6')
 
 while not cma_es.terminate():   
     generation += 1
@@ -51,6 +53,6 @@ while not cma_es.terminate():
  
 
     if generation % 10 == 0:
-        save_obj(cma_es, generation, 'models/cmaes_pong_v5')
+        save_obj(cma_es, generation, 'models/cmaes_pong_v7')
         games[0].play_sample_game(FixedTopologyNeuralNetwork(6, topology, cma_es.sample()[0]))
 
