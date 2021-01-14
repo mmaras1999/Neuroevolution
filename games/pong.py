@@ -3,6 +3,9 @@ import math
 from enum import IntEnum
 from pygame.locals import *
 
+import numpy as np
+import pickle
+
 class Game:
     class State(IntEnum):
         IN_PROGRES = 0
@@ -10,6 +13,13 @@ class Game:
         WIN_BOT = 2
     
     def __init__(self):
+        pygame.init()
+        screen = pygame.display.set_mode((1000, 1000))
+        pygame.display.set_caption('Pong NN')
+
+        self.init_game()
+    
+    def init_game(self):
         self.state = Game.State.IN_PROGRES
         self.board = pygame.Surface((800, 800)).convert()
 
@@ -27,7 +37,7 @@ class Game:
 
     def setState(self, new_state):
         self.state = new_state
-        print("game won by", new_state)
+        # print("game won by", new_state)
     
     def getGameState(self):
         return self.pads[0].pos.centerx, self.pads[1].pos.centerx, self.ball.pos.centerx, self.ball.pos.centery
@@ -35,16 +45,106 @@ class Game:
     def getGameStateRev(self):
         return self.pads[1].pos.centerx, self.pads[0].pos.centerx, self.ball.pos.centerx, self.board.get_height() - self.ball.pos.centery
 
+  
+    def play_two_bots(self, inp1, inp2, draw=False, MAX_ROUNDS=10**4, fps=30):
+        self.__init__()
+
+        clock = pygame.time.Clock()
+
+        # Event loop
+        rounds = 0
+        while self.state == Game.State.IN_PROGRES and rounds < MAX_ROUNDS:
+            rounds += 1
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    return
+
+            # keys = pygame.key.get_pressed()
+            
+            self.pads[0].move(inp1(self.getGameState()))
+            self.pads[1].move(inp2(self.getGameStateRev()))
+
+            self.ball.move()
+            # print(self.getGameState())
+
+            if draw:
+                clock.tick(fps)
+                self.draw(pygame.display.get_surface())
+                pygame.display.flip()
+            
+        return rounds, self.state
+    
+    def play(self, NN):
+        score = 0
+        for i in range(10):
+            rounds, win = self.play_two_bots(bot, get_NN_bot(NN))
+            if win == Game.State.WIN_TOP:
+                score +=  3 * 10**4 - rounds
+            if win == Game.State.WIN_BOT:
+                score +=  rounds
+            if win == Game.State.IN_PROGRES:
+                score +=  10**4 + rounds
+        return score / (10**4) / 10
+
+    def play_two(self, NN, NN2):
+        score = 0
+        for i in range(10):
+            rounds, win = self.play_two_bots(get_NN_bot(NN), get_NN_bot(NN2))
+            if win == Game.State.WIN_TOP:
+                score +=  3 * 10**4 - rounds
+            if win == Game.State.WIN_BOT:
+                score +=  rounds
+            if win == Game.State.IN_PROGRES:
+                score +=  10**4 + rounds
+        return score / (10**4) / 10
+
+    def play_sample_game(self, NN):
+        self.play_two_bots(get_NN_bot(NN), bot, draw=True, MAX_ROUNDS=2000)
+    
+    def play_sample_game_two(self, NN, NN2):
+        self.play_two_bots(get_NN_bot(NN), get_NN_bot(NN2), draw=True, MAX_ROUNDS=2000)
+
+    def play_with_NN(self, NN,):
+        NN_bot = get_NN_bot(NN)
+        self.__init__()
+
+        clock = pygame.time.Clock()
+
+        # Event loop
+        rounds = 0
+        while self.state == Game.State.IN_PROGRES and rounds < 10**4:
+            rounds += 1
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    return
+
+            keys = pygame.key.get_pressed()
+            
+            self.pads[0].move(NN_bot(self.getGameState()))
+            self.pads[1].move(inp1(keys))
+
+            self.ball.move()
+            # print(self.getGameState())
+
+            clock.tick(30)
+            self.draw(pygame.display.get_surface())
+            pygame.display.flip()
+            
+        return rounds, self.state
+
+
+
 
 class Ball:
     def __init__(self, game):
         self.pos = pygame.Rect(game.board.get_width() / 2, game.board.get_height() / 2, 25, 25)
-        self.angle = math.pi / 3
+        self.angle = math.pi / 2
         self.speed = 15
         self.game = game
 
     def move(self):
         self.pos = self.pos.move(math.cos(self.angle) * self.speed, -math.sin(self.angle) * self.speed)
+        self.speed += 1 / 500
       
         if self.pos.left < 0:   
             self.pos.left = -self.pos.left
@@ -90,57 +190,22 @@ class Pad:
         pygame.draw.rect(screen, (200, 200, 200), self.pos)
 
     def move(self, dir):
-        self.pos = self.pos.move(dir * 10, 0)
-
-
-def main(inp1, inp2, draw=False, MAX_ROUNDS=10**4):
-    # Initialise screen
-
-    # Fill background
-
-    # Display some text
-    # font = pygame.font.Font(None, 36)
-    # text = font.render("Hello There", 1, (10, 10, 10))
-    # textpos = text.get_rect()
-    # textpos.centerx = background.get_rect().centerx
-    # background.blit(text, textpos)
-
-    # Blit everything to the screen
-
-    clock = pygame.time.Clock()
-    game = Game()
-
-    # Event loop
-    rounds = 0
-    while game.state == Game.State.IN_PROGRES and rounds < MAX_ROUNDS:
-        rounds += 1
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                return
-
-        # keys = pygame.key.get_pressed()
+        self.pos = self.pos.move(dir * 11, 0)
         
-        game.pads[0].move(inp1(game.getGameState()))
-        game.pads[1].move(inp2(game.getGameStateRev()))
+        if self.pos.centerx < 0:
+            self.pos.centerx = 0
+        
+        if self.pos.centerx > self.game.board.get_width():
+            self.pos.centerx = self.game.board.get_width()
 
-        game.ball.move()
-        print(game.getGameState())
-
-        if draw:
-            clock.tick(30)
-            game.draw(pygame.display.get_surface())
-            pygame.display.flip()
-    return rounds, game.state
-
-
-def inp1(state, keys):
+def inp1(keys):
     if keys[K_LEFT]:
         return -1
     if keys[K_RIGHT]:
         return 1
     return 0
 
-def inp2(state, keys):
+def inp2(keys):
     if keys[K_a]:
         return -1
     if keys[K_d]:
@@ -149,20 +214,28 @@ def inp2(state, keys):
 
 def bot(state):
     myX, othX, bX, bY = state
-    if myX < bX - 50:
-        return 1
-    if myX > bX + 50:
-        return -1
-    return 0
-
-def teach():
-    pygame.init()
-    screen = pygame.display.set_mode((1000, 1000))
-    pygame.display.set_caption('Pong NN')
-
-
-    print(main(bot, bot, False))
-    pass
+    if bX > 400:
+        if myX - 30 < bX:
+            return 1
+        if myX - 30 > bX:
+            return -1
+        return 0
+    else:
+        if myX + 30 < bX:
+            return 1
+        if myX + 30 > bX:
+            return -1
+        return 0
 
 
-if __name__ == '__main__': teach()
+def get_NN_bot(NN):
+    def make_move(prob):
+        if np.random.uniform() > prob:
+            return 1
+        else:
+            return -1
+    def fun(state):
+        state = np.array(state) / 800
+        return make_move(NN.eval(state))
+        
+    return fun
