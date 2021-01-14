@@ -24,16 +24,16 @@ class PongGame:
         if(len(np.unique(gameImage[:, 16])) != 4):
             return np.array([-1])
 
-        if(len(np.nonzero(gameImage[:, 0:15])[0]) != 0 and not self.scored):
+        col143 = np.nonzero(gameImage[:, 143])[0]
+        col16 = np.nonzero(gameImage[:, 16])[0]
+
+        if(len(col143) != 0 and not self.scored):
             self.score += 1.0
             self.scored = True
-        if(len(np.nonzero(gameImage[:, 144:159])[0]) != 0 and not self.scored):
+        if(len(col16) != 0 and not self.scored):
             self.scored = True
             self.score -= 1.0
     
-        col143 = np.nonzero(gameImage[:, 143])[0]
-        col16 = np.nonzero(gameImage[:, 16])[0]
-        
         p1 = (col143[0] + 1) / 160.0
         if col143[0] == 0:
             p1 = (col143[-1] - 14) / 160.0
@@ -59,7 +59,7 @@ class PongGame:
         diffx = 0 if (ballx == 0 or self.prev_ballx == 0) else (ballx - self.prev_ballx)
         diffy = 0 if (bally == 0 or self.prev_bally == 0) else (bally - self.prev_bally)
 
-        res = np.array([p1, p2, diffx, diffy, ballx, bally])
+        res = np.array([p1, p2, diffx, diffy, ballx, p1 - bally])
         self.prev_ballx = ballx
         self.prev_bally = bally
 
@@ -67,7 +67,10 @@ class PongGame:
 
 
     def make_move(self, prob):
-        return np.random.choice(a=[0, 2, 3], p=prob)
+        if np.random.uniform() < prob:
+            return 2
+        else:
+            return 3
     
 
     def play(self, network, render=False):
@@ -98,7 +101,7 @@ class PongGame:
             input = self.processImage(observation)
 
             prob = network.eval(input)
-            prob = prob / prob.sum()
+            #prob = prob / prob.sum()
             move = self.make_move(prob)
 
             observation, reward, end, info = self.env.step(move)

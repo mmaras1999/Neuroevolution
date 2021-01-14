@@ -1,4 +1,3 @@
-from games.pong import Game
 from games.pong_gym import PongGame
 from lib.cma_es import CMA_ES_Active
 from lib.activator_funcs import sigmoid
@@ -22,11 +21,11 @@ class pongThread(threading.Thread):
         print('running {0}'.format(self.id))
         self.output[self.id] = -np.array([games[self.id].play(FixedTopologyNeuralNetwork(self.input_size, self.topology, ind)) for ind in self.population])
 
-topology = [(6, sigmoid), (3, sigmoid)]
+topology = [(6, sigmoid), (1, sigmoid)]
 cma_es = CMA_ES_Active(np.zeros(calc_weight_count(6, topology)), 1.0)
 games = [PongGame() for i in range(_threads)]
 
-generation = 260
+generation = 0
 
 while not cma_es.terminate():   
     generation += 1
