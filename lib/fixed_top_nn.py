@@ -1,3 +1,5 @@
+import numpy as np  
+
 class FixedTopologyNeuralNetwork:
 
     class Neuron:
@@ -12,31 +14,30 @@ class FixedTopologyNeuralNetwork:
     #*  
     def __init__(self, input_size, layers, wages):
         self.input_size = input_size
-        self.layers = []
-
         prev_layer_size = input_size
+        self.layers = []
         id = 0
 
         for layer_size, func in layers:
             neurons = []
 
             for neuron_id in range(layer_size):
-                wages = np.array(wages[id:id + prev_layer_size])
-                bias = wages[id + prev_layer_size]
+                w = np.array(wages[id:id + prev_layer_size])
+                b = wages[id + prev_layer_size]
                 
                 id += prev_layer_size + 1
 
-                neurons.append(self.Neuron(wages, bias))
+                neurons.append(self.Neuron(w, b))
 
 
             self.layers.append((neurons, func))
             prev_layer_size = layer_size
 
 
-    def eval(input):
+    def eval(self, input):
         output = np.array(input)
 
         for neurons, func in self.layers:
-            output = func(np.array([np.sum(neuron.wages * output) + bias for neuron in neurons]))
+            output = func(np.array([np.sum(neuron.wages * output) + neuron.bias for neuron in neurons]))
         
         return output
