@@ -5,14 +5,14 @@ from lib.activator_funcs import sigmoid
 from lib.fixed_top_nn import FixedTopologyNeuralNetwork
 from lib.utilities import save_obj, load_obj, calc_weight_count
 import numpy as np
-import threading
+from multiprocessing import Process, Manager
 import pygame
 
-_threads = 8
+_processes = 8
 
-class pongThread(threading.Thread):
+class pongThread(Process):
     def __init__(self, id, output, population, input_size, topology):
-        threading.Thread.__init__(self)
+        super().__init__()
         self.id = id
         self.population = population
         self.input_size = input_size
@@ -22,10 +22,11 @@ class pongThread(threading.Thread):
     def run(self):
         # print('running {0}'.format(self.id))
         self.output[self.id] = -np.array([games[self.id].play(FixedTopologyNeuralNetwork(self.input_size, self.topology, ind)) for ind in self.population])
+        # print(self.output[self.id])
 
 topology = [(6, sigmoid), (3, sigmoid), (1, sigmoid)]
 cma_es = CMA_ES_Active(np.zeros(calc_weight_count(6, topology)), 1.0, popsize=32)
-games = [Game() for i in range(_threads)]
+games = [Game() for i in range(_processes)]
 
 generation = 0
 
@@ -34,9 +35,9 @@ while not cma_es.terminate():
     print('Generation:', generation)
     population = cma_es.sample()
 
-    chunks = np.array_split(population, _threads)
-    results = [None] * _threads
-    threads = [pongThread(i, results, chunks[i], 6, topology) for i in range(_threads)]
+    chunks = np.array_split(population, _processes)
+    results = Manager().list([None] * _processes)
+    threads = [pongThread(i, results, chunks[i], 6, topology) for i in range(_processes)]
 
     for th in threads:
         th.start()

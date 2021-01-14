@@ -82,7 +82,7 @@ class Game:
             if win == Game.State.WIN_BOT:
                 score += rounds - abs(self.pads[0].pos.centerx - self.ball.pos.centerx)
             if win == Game.State.IN_PROGRES:
-                score += 5000 + rounds 
+                score += 5000 + rounds
         return score / (10**4) / 10
 
     def play_sample_game(self, NN):
