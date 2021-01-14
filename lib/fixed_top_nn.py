@@ -33,7 +33,6 @@ class FixedTopologyNeuralNetwork:
             self.layers.append((neurons, func))
             prev_layer_size = layer_size
 
-
     def eval(self, input):
         output = np.array(input)
 

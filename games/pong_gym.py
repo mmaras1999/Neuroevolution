@@ -1,5 +1,5 @@
 import gym
-import pickle
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 from lib.fixed_top_nn import FixedTopologyNeuralNetwork
@@ -31,8 +31,16 @@ class PongGame:
             self.scored = True
             self.score -= 1.0
     
-        p1 = np.nonzero(gameImage[:, 143])[0][0] / 160.0
-        p2 = np.nonzero(gameImage[:, 16])[0][0] / 160.0
+        col143 = np.nonzero(gameImage[:, 143])[0]
+        col16 = np.nonzero(gameImage[:, 16])[0]
+        
+        p1 = (col143[0] + 1) / 160.0
+        if col143[0] == 0:
+            p1 = (col143[-1] - 14) / 160.0
+
+        p2 = (col16[0] + 1) / 160.0
+        if col16[0] == 0:
+            p2 = (col16[-1] - 14) / 160.0
         
         tmp = np.nonzero(gameImage[:, 20:140])
         
@@ -40,28 +48,39 @@ class PongGame:
         bally = 0
 
         if len(tmp[0]) != 0:
-            ballx = tmp[1][0] / 120.0
-            bally = tmp[0][0] / 160.0
+            ballx = (tmp[1][0] + 1) / 120.0
+            bally = (tmp[0][0] + 1) / 160.0
+            
+            if tmp[0][0] == 0:
+                bally = (tmp[0][-1] - 2) / 160.0
+
             self.scored = False
-        
-        return np.array([p1, p2, ballx, bally])
+
+        diffx = 0 if (ballx == 0 or self.prev_ballx == 0) else (ballx - self.prev_ballx)
+        diffy = 0 if (bally == 0 or self.prev_bally == 0) else (bally - self.prev_bally)
+
+        res = np.array([p1, p2, diffx, diffy, ballx, bally])
+        self.prev_ballx = ballx
+        self.prev_bally = bally
+
+        return res
 
 
     def make_move(self, prob):
-        if np.random.uniform() > prob:
-            return 3
-        else:
-            return 2
+        return np.random.choice(a=[0, 2, 3], p=prob)
     
 
-    def play(self, network):
+    def play(self, network, render=False):
         observation = self.env.reset()
         self.score = 0.0 
+        self.prev_ballx = 0
+        self.prev_bally = 0
         self.scored = False
 
         #! Sometimes the game starts without the enemy for few frames, the loop below skips this part
         while True:
-            self.env.render()
+            if render:
+                self.env.render()
 
             if self.processImage(observation)[0] != -1:
                 break
@@ -74,10 +93,13 @@ class PongGame:
         while True:
             frames_played += 1
 
-            self.env.render()
+            if render:
+                self.env.render()
             input = self.processImage(observation)
 
-            move = self.make_move(network.eval(input))
+            prob = network.eval(input)
+            prob = prob / prob.sum()
+            move = self.make_move(prob)
 
             observation, reward, end, info = self.env.step(move)
     
@@ -85,3 +107,4 @@ class PongGame:
                 if reward == 1.0:
                     return self.score - frames_played / 1000.0
                 return self.score + frames_played / 1000.0
+            #time.sleep(10)

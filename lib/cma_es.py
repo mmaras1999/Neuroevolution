@@ -57,6 +57,8 @@ class CMA_ES_Active:
         self.updated_eval = 0
         self.inv_sqrt = np.identity(N)
 
+        self.bestgens = []
+
     def _update_eigensystem(self, current_eval, lazy_gap_evals):
         if current_eval <= self.updated_eval + lazy_gap_evals:
             return self
@@ -81,6 +83,7 @@ class CMA_ES_Active:
         self.fitvals = fitvals[ids]
         
         self.best = (x[0], self.fitvals[0])
+        self.bestgens.append(self.best)
         
         self.xmean = (self.weights[:self.µ] @ x[:self.µ]).ravel()
         y = (x - x_old) / self.sigma
