@@ -1,0 +1,85 @@
+\documentclass[polish]{article}
+\usepackage{roboto}
+\usepackage{fourier}
+\usepackage[T1]{fontenc}
+\usepackage{polski}
+\usepackage{mathpazo}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{titlesec}
+\usepackage{geometry}
+\usepackage{array}
+\usepackage[x11names, dvipsnames, table]{xcolor}
+\usepackage{tikz}
+\usepackage{epstopdf}
+\usepackage{sectsty}
+\usepackage{graphicx,wrapfig}
+\usepackage{caption}
+\usepackage{setspace}
+\usetikzlibrary{chains}
+
+
+%COMMANDS
+\newcommand{\ThickRule}{\noindent\rule{\linewidth}{0.4mm}}
+\newcommand{\ThinRule}{\noindent\rule{\linewidth}{0.4pt}}
+\newcommand{\IPAddr}[1]{\texttt{#1}}
+\renewcommand{\arraystretch}{2.5}
+\renewcommand\thesection{} %hide section numbers
+
+%GLOBAL SETTINGS
+\setlength{\arrayrulewidth}{0.5mm}
+\setlength{\tabcolsep}{18pt}
+\titleformat*{\section}{\Large \mdseries \roboto \color{MSBlue}}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+\sectionfont{\vspace{6pt}\centering \fontfamily{roboto}\selectfont \scshape}
+
+%COLORS
+\definecolor{MSBlue}{rgb}{.204,.253,.300}
+\definecolor{ao}{rgb}{0.0, 0.5, 0.0}
+\definecolor{applegreen}{rgb}{0.55, 0.71, 0.0}
+\definecolor{azure}{rgb}{0.0, 0.5, 1.0}
+\definecolor{columbiablue}{rgb}{0.61, 0.87, 1.0}
+\definecolor{babyblueeyes}{rgb}{0.63, 0.79, 0.95}
+\definecolor{babyblue}{rgb}{0.54, 0.81, 0.94}
+\definecolor{carolinablue}{rgb}{0.6, 0.73, 0.89}
+\definecolor{cerulean}{rgb}{0.0, 0.48, 0.65}
+\definecolor{crimson}{rgb}{0.86, 0.08, 0.24}
+\definecolor{crimsonglory}{rgb}{0.75, 0.0, 0.2}
+\definecolor{harvardcrimson}{rgb}{0.79, 0.0, 0.09}
+\definecolor{oucrimsonred}{rgb}{0.6, 0.0, 0.0}
+\definecolor{calpolypomonagreen}{rgb}{0.12, 0.3, 0.17}
+
+\onehalfspacing
+\begin{document}
+    \newgeometry{tmargin=2cm, bmargin=2cm, lmargin=2cm, rmargin=2cm}
+    \begin{roboto}
+
+    \begin{center}
+    
+    \textit{\Large Michał Kępa,  Michał Maras}\\[0.5cm]
+
+    \text{\bfseries \huge \textcolor{ao}{Algorytmy ewolucyjne} }\\[0.2cm]
+    \text{\Large \textcolor{calpolypomonagreen}{Neuroewolucja w grach}}
+    \\[0.7cm]
+    
+    \text{\textit{\large Projekt zaliczeniowy}}\\[0.2cm]
+    \ThinRule\\[0.75cm]
+    \end{center}
+
+    \end{roboto}
+    
+    \begin{roboto}
+    \section{\textbf{\textcolor{calpolypomonagreen}{Wprowadzenie}}}
+    
+    Celem projektu jest wykorzystanie algorytmów ewolucyjnych jako sposobu trenowania sieci neuronowych,
+    grających w różne gry. 
+    
+
+
+
+ 
+    \end{roboto}
+
+\end{document}

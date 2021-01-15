@@ -3,10 +3,13 @@ from lib.cma_es import CMA_ES_Active
 from lib.activator_funcs import sigmoid
 from lib.fixed_top_nn import FixedTopologyNeuralNetwork
 from lib.utilities import save_obj, load_obj, calc_weight_count
-import numpy as np
 from multiprocessing import Process, Manager
+import numpy as np
+import sys
+import os
 
 _processes = 8
+topology = [(6, sigmoid), (1, sigmoid)]
 
 class pongThread(Process):
     def __init__(self, id, output, population, input_size, topology):
@@ -19,14 +22,17 @@ class pongThread(Process):
 
     def run(self):
         print('running {0}'.format(self.id))
-        self.output[self.id] = -np.array([games[self.id].play(FixedTopologyNeuralNetwork(self.input_size, self.topology, ind)) for ind in self.population])
-        # print(self.output[self.id])
+        self.output[self.id] = -np.array([games[self.id].play(
+            FixedTopologyNeuralNetwork(
+                self.input_size, self.topology, ind)
+                ) for ind in self.population])
 
-topology = [(6, sigmoid), (1, sigmoid)]
-cma_es = load_obj(380, 'models/cmaes_pong_v4') #CMA_ES_Active(np.zeros(calc_weight_count(6, topology)), 1.0)
+#cma_es = CMA_ES_Active(np.zeros(calc_weight_count(6, topology)), 1.0)
+cma_es = load_obj(1500, 'models/cmaes_pong_v8')
+    
 games = [PongGame() for i in range(_processes)]
 
-generation = 380
+generation = 1500
 
 while not cma_es.terminate():   
     generation += 1

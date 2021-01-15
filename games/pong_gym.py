@@ -2,7 +2,6 @@ import gym
 import time
 import numpy as np
 import matplotlib.pyplot as plt
-from lib.fixed_top_nn import FixedTopologyNeuralNetwork
 
 class PongGame:
     def __init__(self):
@@ -24,16 +23,16 @@ class PongGame:
         if(len(np.unique(gameImage[:, 16])) != 4):
             return np.array([-1])
 
-        col143 = np.nonzero(gameImage[:, 143])[0]
-        col16 = np.nonzero(gameImage[:, 16])[0]
-
-        if(len(col143) != 0 and not self.scored):
+        if(len(np.nonzero(gameImage[:, 0:15])[0]) != 0 and not self.scored):
             self.score += 1.0
             self.scored = True
-        if(len(col16) != 0 and not self.scored):
+        if(len(np.nonzero(gameImage[:, 144:159])[0]) != 0 and not self.scored):
             self.scored = True
             self.score -= 1.0
     
+        col143 = np.nonzero(gameImage[:, 143])[0]
+        col16 = np.nonzero(gameImage[:, 16])[0]
+        
         p1 = (col143[0] + 1) / 160.0
         if col143[0] == 0:
             p1 = (col143[-1] - 14) / 160.0
@@ -73,7 +72,7 @@ class PongGame:
             return 3
     
 
-    def play(self, network, render=False):
+    def play(self, network, render=False, wait=None):
         observation = self.env.reset()
         self.score = 0.0 
         self.prev_ballx = 0
@@ -110,4 +109,6 @@ class PongGame:
                 if reward == 1.0:
                     return self.score - frames_played / 1000.0
                 return self.score + frames_played / 1000.0
-            #time.sleep(10)
+            
+            if wait is not None:
+                time.sleep(wait)
