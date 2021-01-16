@@ -27,7 +27,7 @@ def botBob(state):
             return -1
         return 0
 
-class Game:
+class PongGame:
     class State(IntEnum):
         IN_PROGRES = 0
         WIN_TOP = 1
@@ -41,7 +41,7 @@ class Game:
         self.init_game()
     
     def init_game(self):
-        self.state = Game.State.IN_PROGRES
+        self.state = PongGame.State.IN_PROGRES
 
         self.ball = Ball(self)
         self.pads = [Pad(self, 0), Pad(self, self.board.get_height())]
@@ -73,7 +73,7 @@ class Game:
 
         # Event loop
         rounds = 0
-        while self.state == Game.State.IN_PROGRES and rounds < MAX_ROUNDS:
+        while self.state == PongGame.State.IN_PROGRES and rounds < MAX_ROUNDS:
             rounds += 1
             # for event in pygame.event.get():
             #     if event.type == QUIT:
@@ -98,11 +98,11 @@ class Game:
         score = 0
         for i in range(10):
             rounds, win = self.play_two_bots(get_NN_bot(NN), botBob)
-            if win == Game.State.WIN_TOP:
+            if win == PongGame.State.WIN_TOP:
                 score += 30000 - rounds + abs(self.pads[1].pos.centerx - self.ball.pos.centerx)
-            if win == Game.State.WIN_BOT:
+            if win == PongGame.State.WIN_BOT:
                 score += rounds - abs(self.pads[0].pos.centerx - self.ball.pos.centerx)
-            if win == Game.State.IN_PROGRES:
+            if win == PongGame.State.IN_PROGRES:
                 score += 5000 + rounds
         return score / (10**4) / 10
 
@@ -116,7 +116,7 @@ class Game:
 
         # Event loop
         rounds = 0
-        while self.state == Game.State.IN_PROGRES and rounds < 10**4:
+        while self.state == PongGame.State.IN_PROGRES and rounds < 10**4:
             rounds += 1
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -124,14 +124,12 @@ class Game:
 
             keys = pygame.key.get_pressed()
             
-            self.pads[0].move(inp1(keys))
-            self.pads[1].move(bot(self.getGameStateRev()))
+            self.pads[1].move(inp1(keys))
+            self.pads[0].move(bot(self.getGameState()))
 
             self.ball.move()
-            # print(self.getGameState())
 
             clock.tick(30)
-            print(self.getGameState(), self.ball.speed)
             self.draw(pygame.display.get_surface())
             pygame.display.flip()
             
@@ -139,9 +137,6 @@ class Game:
 
     def play_with_NN(self, NN):
         self.play_with_bot(get_NN_bot(NN))
-
-
-
 
 
 class Ball:
@@ -160,6 +155,7 @@ class Ball:
         self.speed += 1 / 500
 
       
+        #bounce from map borders
         if self.pos.left < 0:   
             self.pos.left = -self.pos.left
             self.angle = math.atan2(math.sin(self.angle), -math.cos(self.angle))
@@ -168,13 +164,13 @@ class Ball:
             self.pos.right = 2 * self.game.board.get_width() - self.pos.right
             self.angle = math.atan2(math.sin(self.angle), -math.cos(self.angle))
 
+        #bounce from pads
         if self.pos.top < self.game.pads[0].pos.bottom:
             diff = (self.pos.centerx - self.game.pads[0].pos.centerx) / (self.game.pads[0].pos.width + self.pos.width) * 2
 
             if diff > 1 or diff < -1:
-                self.game.setState(Game.State.WIN_BOT)
+                self.game.setState(PongGame.State.WIN_BOT)
             else:
-                # self.angle = math.atan2(-math.sin(self.angle), math.cos(self.angle))
                 self.angle = math.pi * 3 / 2 + math.pi / 3 * diff
                 self.pos.top += 2 * (self.game.pads[0].pos.bottom - self.pos.top)
 
@@ -182,13 +178,11 @@ class Ball:
             diff = (self.pos.centerx - self.game.pads[1].pos.centerx) / (self.game.pads[1].pos.width + self.pos.width) * 2
 
             if diff > 1 or diff < -1:
-                self.game.setState(Game.State.WIN_TOP)
+                self.game.setState(PongGame.State.WIN_TOP)
             else:
-                # self.angle = math.atan2(-math.sin(self.angle), math.cos(self.angle))
                 self.angle = math.pi / 2 - math.pi / 3 * diff
                 self.pos.bottom -= 2 * (self.pos.bottom - self.game.pads[1].pos.top)
 
-        # print(self.pos, self.angle)
 
     def draw(self, screen):
         pygame.draw.rect(screen, (255,255,255), self.pos)

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from lib.utilities import load_obj
 
 
-cma_es = load_obj(280, 'models/cmaes_pong_v9')
+cma_es = load_obj(1000, 'models/cmaes_pong_v5')
 
 scores = []
 for gen, scr in cma_es.bestgens:
