@@ -4,8 +4,9 @@ import pickle
 import matplotlib.pyplot as plt
 from lib.utilities import load_obj
 
-
-cma_es = load_obj(560, 'models/cmaes_pong_v10')
+#check best[644] (645 population), had -14 score
+#check best[1163] (1164 population), had -15.8 score
+cma_es = load_obj(1360, 'models/cmaes_pong_v10')
 
 scores = []
 for gen, scr in cma_es.bestgens:
