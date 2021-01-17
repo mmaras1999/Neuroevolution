@@ -16,7 +16,7 @@ class CustomTopologyNeuralNetwork:
             if type == CustomTopologyNeuralNetwork.NodeType.BIAS:
                 self.score = 1
         def __repr__(self):
-            return f"node {self.id} : {self.type.name}"
+            return f"node {self.id}; {self.type.name}"
 
     class Link:
         def __init__(self, nodeFrom, nodeTo, weight):
@@ -25,7 +25,7 @@ class CustomTopologyNeuralNetwork:
             self.weight = weight
         
         def __repr__(self):
-            return f"link {self.nodeFrom} -> {self.nodeTo}; {self.weight}"
+            return f"link {self.nodeFrom} -> {self.nodeTo}; w = {self.weight}"
 
     #nodes must have type and id fields, link must have nodeFrom, nodeTo and weight fields.
     #the order of nodes determines the input is passed (first input node in list will take first input value and so on)
@@ -52,8 +52,8 @@ class CustomTopologyNeuralNetwork:
             assert self.nodes[link.nodeFrom].type < CustomTopologyNeuralNetwork.NodeType.OUTPUT, f"source node must not be output: {link}"
 
             self.linksTo[link.nodeTo].append(CustomTopologyNeuralNetwork.Link(link.nodeFrom, link.nodeTo, link.weight))
-        print(self.nodes)
-        print(self.linksTo)
+        # print(self.nodes)
+        # print(self.linksTo)
 
         self.act_fun = activation_function
 
@@ -102,20 +102,3 @@ class CustomTopologyNeuralNetwork:
             results.append(self.nodes[node_id].score)
         
         return results
-
-
-nodes = [CustomTopologyNeuralNetwork.Node(6, CustomTopologyNeuralNetwork.NodeType.INPUT),
-         CustomTopologyNeuralNetwork.Node(3, CustomTopologyNeuralNetwork.NodeType.OUTPUT),
-         CustomTopologyNeuralNetwork.Node(1, CustomTopologyNeuralNetwork.NodeType.HIDDEN),
-         CustomTopologyNeuralNetwork.Node(5, CustomTopologyNeuralNetwork.NodeType.BIAS),
-         CustomTopologyNeuralNetwork.Node(7, CustomTopologyNeuralNetwork.NodeType.HIDDEN),
-         CustomTopologyNeuralNetwork.Node(4, CustomTopologyNeuralNetwork.NodeType.OUTPUT)]
-
-links = [CustomTopologyNeuralNetwork.Link(6, 7, 1.5),
-         CustomTopologyNeuralNetwork.Link(7, 1, 3),
-         CustomTopologyNeuralNetwork.Link(5, 1, 2),
-         CustomTopologyNeuralNetwork.Link(6, 3, 3),
-         CustomTopologyNeuralNetwork.Link(6, 1, 0.5),
-         CustomTopologyNeuralNetwork.Link(5, 4, -2),
-         CustomTopologyNeuralNetwork.Link(1, 4, -3),
-         CustomTopologyNeuralNetwork.Link(1, 3, 0)]

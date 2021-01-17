@@ -1,4 +1,5 @@
 from games.xor_game import XorGame
+from lib.neat import Neat
 from lib.cma_es import CMA_ES_Active
 from lib.activator_funcs import sigmoid
 from lib.fixed_top_nn import FixedTopologyNeuralNetwork
@@ -22,22 +23,19 @@ class XorProcess(Process):
 
     def run(self):
         # print('running {0}'.format(self.id))
-        self.output[self.id] = -np.array([games[self.id].play(
-            FixedTopologyNeuralNetwork(
-                self.input_size, self.topology, ind)
-                ) for ind in self.population])
+        self.output[self.id] = np.array([games[self.id].play(ind) for ind in self.population])
 
-cma_es = CMA_ES_Active(np.zeros(calc_weight_count(2, topology)), 1.0)
-# cma_es = load_obj(1500, 'models/cmaes_pong_v8')
+
+neat = Neat(2, 1)
     
 games = [XorGame() for i in range(_processes)]
 
 generation = 0
 
-while not cma_es.terminate():   
+while True:  
     generation += 1
     print('Generation:', generation)
-    population = cma_es.sample()
+    population = neat.getFenotypes()
 
     chunks = np.array_split(population, _processes)
     results = Manager().list([None] * _processes)
@@ -50,12 +48,12 @@ while not cma_es.terminate():
         th.join()
 
     f_eval = np.concatenate(tuple(results))
-    print(f_eval)
+    # print(f_eval)
     print(f_eval.mean())
-    cma_es.update(population, f_eval)
+    neat.update(f_eval)
  
 
     if generation % 10 == 0:
-        save_obj(cma_es, generation, 'models/cmaes_xor_v1')
+        save_obj(neat, generation, 'models/neat_xor_v1')
         #games[0].play_sample_game(FixedTopologyNeuralNetwork(6, topology, cma_es.sample()[0]))
 
