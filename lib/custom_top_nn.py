@@ -1,5 +1,6 @@
 from enum import IntEnum
-from lib.activator_funcs import sigmoid_3
+from lib.activator_funcs import sigmoid
+import numpy as np
 
 class CustomTopologyNeuralNetwork:
     class NodeType(IntEnum):
@@ -30,7 +31,7 @@ class CustomTopologyNeuralNetwork:
     #nodes must have type and id fields, link must have nodeFrom, nodeTo and weight fields.
     #the order of nodes determines the input is passed (first input node in list will take first input value and so on)
     #the same is with output
-    def __init__(self, nodes, links, activation_function=sigmoid_3):
+    def __init__(self, nodes, links, activation_function=sigmoid):
         self.nodes = {}
         self.outputs = []
         self.inputs = []
@@ -71,7 +72,7 @@ class CustomTopologyNeuralNetwork:
         del self.onStack
 
     def calcOrderRecursive(self, nodeId):
-        assert nodeId not in self.onStack, "the network has cycle"
+        assert nodeId not in self.onStack, f"the network has cycle, {self.linksTo}"
             
         if nodeId in self.visited:
             return
@@ -101,4 +102,4 @@ class CustomTopologyNeuralNetwork:
         for node_id in self.outputs:
             results.append(self.nodes[node_id].score)
         
-        return results
+        return np.array(results)

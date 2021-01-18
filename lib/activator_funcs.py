@@ -8,8 +8,11 @@ def ReLU(x):
 def sigmoid(x):
     return expit(x)
 
-def sigmoid_3(x):
-    return 1 / (1 +exp(-3 * x))
+def sigmoid_3(x): 
+    if x < 0:
+        return 1 - 1/(1 + exp(3 * x))
+    else:
+        return 1/(1 + exp(-3 * x))
 
 def tanh(x):
     return np.tanh(x)

@@ -1,4 +1,4 @@
-from games.xor_game import XorGame
+from games.pong_gym_v2 import PongGame
 from lib.neat import Neat
 from lib.custom_top_nn import CustomTopologyNeuralNetwork as NN
 from lib.cma_es import CMA_ES_Active
@@ -27,9 +27,9 @@ class XorProcess(Process):
         self.output[self.id] = np.array([games[self.id].play(ind) for ind in self.population])
 
 
-neat = Neat(2, 1)
+neat = Neat(6, 1)
 
-games = [XorGame() for i in range(_processes)]
+games = [PongGame() for i in range(_processes)]
 
 generation = 0
 
@@ -54,7 +54,7 @@ while True:
     neat.update(f_eval, verbose=True) #neat maximize function evals
 
     if generation % 10 == 0:
-        save_obj(neat, generation, 'models/neat_xor_v1')
+        save_obj(neat, generation, 'models/neat_pong_v1')
         games[0].play(neat.bestgens[-1][2], render=True)
         print(neat.bestgens[-1][0].nodesGens, neat.bestgens[-1][0].linksGens)
 
