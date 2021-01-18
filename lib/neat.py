@@ -129,12 +129,12 @@ class Neat:
         self.C1 = 1
         self.C2 = 1
         self.C3 = 0.3
-        self.SPECIES_TRESHOLD = 1
+        self.SPECIES_TRESHOLD = 0.75
         self.MAX_STAGNANT_TIME = 15
         self.MAX_ADD_LINK_TRIES = 15
 
         self.BEST_INDIVIDUAL_COUNT = int(popsize * 0.75) 
-        # self.BEST_POPULATION_FRACTION = 0.51 #how many best indiviuals will be used for mating
+        self.BEST_POPULATION_FRACTION = 0.75 #how many best indiviuals will be used for mating
 
     
     def generateSampleNetwork(self, inputs, outputs):
@@ -338,16 +338,18 @@ class Neat:
         for species in self.species:
             species.population = []
 
-        best = np.argsort(-scores)[:self.BEST_INDIVIDUAL_COUNT]
-        self.bestgens.append((self.genotypes[best[0]],scores[best[0]], self.fenotypes[best[0]]))
-        copied = self.genotypes
-        self.genotypes = []
-        for i in best:
-            self.genotypes.append(copied[i])
-        scores = scores[best]
 
         #save best genotype
-        
+        best_id = np.argmax(scores)
+        self.bestgens.append((self.genotypes[best_id],scores[best_id], self.fenotypes[best_id]))
+
+        # best = np.argsort(-scores)[:self.BEST_INDIVIDUAL_COUNT]
+        # copied = self.genotypes
+        # self.genotypes = []
+        # for i in best:
+        #     self.genotypes.append(copied[i])
+        # scores = scores[best]
+
         for i in range(len(scores)):
             self.genotypes[i].fitness = scores[i]
             added = False
@@ -403,6 +405,7 @@ class Neat:
             isBigPopulation = n > self.BIG_POPULATION_TRESHOLD
             probs = np.ones(n) / n
             if n > self.SMALL_POPULATION_TRESHOLD:
+                species.keepBestGenotypes(self.BEST_POPULATION_FRACTION)
                 needToCopyBest = True
                 probs = np.array([genotype.fitness for genotype in species.population])
                 probs -= probs.min()

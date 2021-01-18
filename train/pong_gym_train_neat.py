@@ -10,7 +10,7 @@ import numpy as np
 import sys
 import os
 
-_processes = 8
+_processes = 6
 topology = [(2, sigmoid), (1, sigmoid)]
 
 class XorProcess(Process):
@@ -28,6 +28,7 @@ class XorProcess(Process):
 
 
 neat = Neat(6, 1)
+# neat = load_obj(10, 'models/neat_pong_v1')
 
 games = [PongGame() for i in range(_processes)]
 
