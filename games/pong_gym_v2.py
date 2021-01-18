@@ -125,10 +125,10 @@ class PongGame:
 
             if end:
                 if render:
-                    print("ended with stats:", self.score, frames_played / 10000, self.distances)
+                    print("ended with stats:", self.score, frames_played / 1000, self.distances / 5)
                 if reward == 1.0:
-                    return self.score - frames_played / 10000.0 + self.distances 
-                return self.score + frames_played / 10000.0 + self.distances
+                    return self.score - frames_played / 1000.0 + self.distances / 5
+                return self.score + frames_played / 1000.0 + self.distances / 5
 
             if wait:
                 time.sleep(wait)
