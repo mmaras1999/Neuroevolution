@@ -53,8 +53,8 @@ while True:
     print(f_eval.mean(), f_eval.max(), f_eval.min())
     neat.update(f_eval, verbose=True) #neat maximize function evals
 
-    if generation % 10 == 0:
-        save_obj(neat, generation, 'models/neat_xor_v2')
+    if generation % 5 == 0:
+        save_obj(neat, generation, 'models/neat_xor_v5')
         games[0].play(neat.bestgens[-1][2], render=True)
         print(neat.bestgens[-1][0].nodesGens, neat.bestgens[-1][0].linksGens)
 

@@ -338,6 +338,9 @@ class Neat:
         for species in self.species:
             species.population = []
 
+        self.nodesDict = {}
+        self.innovationDict = {}
+
 
         #save best genotype
         best_id = np.argmax(scores)
@@ -361,13 +364,20 @@ class Neat:
             if not added:
                 self.species.append(Neat.Species(self.genotypes[i]))
         
+        self.species = [species for species in self.species if len(species.population) > 0]
         if verbose:
             print("we have this many species:", len(self.species))
-        self.species = [species for species in self.species if len(species.population) > 0]
+
         for species in self.species:
             species.calcSharedFitness()
             species.updateLeader()
-        self.species = [species for species in self.species if species.stagnationTime <= self.MAX_STAGNANT_TIME]
+        
+        #remove stagnant species
+        if len(self.species) > 2:
+            self.species.sort(reverse=True, key=lambda x: x.bestScore)
+
+            #always take two best species
+            self.species = self.species[:2] + [species for species in self.species[2:] if species.stagnationTime <= self.MAX_STAGNANT_TIME]
 
         if verbose:
             print("and that many survied:", len(self.species))

@@ -8,8 +8,8 @@ import numpy as np
 import sys
 import os
 
-_processes = 6
-topology = [(1, sigmoid)]
+_processes = 8
+topology = [(6, sigmoid), (1, sigmoid)]
 
 class pongThread(Process):
     def __init__(self, id, output, population, input_size, topology):
@@ -27,7 +27,7 @@ class pongThread(Process):
                 self.input_size, self.topology, ind)
                 ) for ind in self.population])
 
-cma_es = CMA_ES_Active(np.zeros(calc_weight_count(6, topology)), 1.0, popsize=12)
+cma_es = CMA_ES_Active(np.zeros(calc_weight_count(6, topology)), 1.0, popsize=32)
 # cma_es = load_obj(1500, 'models/cmaes_pong_v8')
     
 games = [PongGame() for i in range(_processes)]
@@ -56,6 +56,9 @@ while not cma_es.terminate():
  
 
     if generation % 10 == 0:
-        save_obj(cma_es, generation, 'models/cmaes_pong_v11')
+        save_obj(cma_es, generation, 'models/cmaes_pong_v13')
         #games[0].play_sample_game(FixedTopologyNeuralNetwork(6, topology, cma_es.sample()[0]))
 
+#v11 -> new fitness (+ 100 for winning), deterministic  -> topology = [(3, sigmoid), (1, sigmoid)]
+#v12 -> new fitness, random: 700 iteration, no improvement :( -> topology = [(3, sigmoid), (1, sigmoid)]
+#v13 -> new fitness, deterministic:( -> topology = [(6, sigmoid), (1, sigmoid)] TODO
