@@ -26,17 +26,16 @@ class PongProcess(Process):
 
 
 neat = Neat(6, 1)
-neat = load_obj(175, 'models/neat_pong_v5')
+# neat = load_obj(175, 'models/neat_pong_v5')
 
-for spe in neat.species:
-    print("spe")
-    for gen in spe.population:
-        print(len(gen.nodesGens), len(gen.linksGens), end='\t')
+# for spe in neat.species:
+#     print("spe")
+#     for gen in spe.population:
+#         print(len(gen.nodesGens), len(gen.linksGens), end='\t')
 
-exit(0)
 games = [PongGame() for i in range(_processes)]
 
-generation = 175
+generation = 0
 
 while True:  
     generation += 1
@@ -59,7 +58,7 @@ while True:
     neat.update(f_eval, verbose=True) #neat maximize function evals
 
     if generation % 5 == 0:
-        save_obj(neat, generation, 'models/neat_pong_v5')
+        save_obj(neat, generation, 'models/neat_pong_v6')
         games[0].play(neat.bestgens[-1][2], render=True)
         print(neat.bestgens[-1][0].nodesGens, neat.bestgens[-1][0].linksGens)
 
@@ -67,4 +66,5 @@ while True:
 
 #v3 -> det move, old neat
 #v4 -> random move, old neat
-#v5 -> detr move, new neat
+#v5 -> detr move, new neat, normlaized weights diff, treshold = 0.75 TODO train more
+#v6 -> detr move, new neat, weights diff, treshold = 3 TODO train more

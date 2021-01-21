@@ -1,5 +1,5 @@
 from enum import IntEnum
-from lib.activator_funcs import sigmoid
+from lib.activator_funcs import sigmoid, sigmoid_3
 import numpy as np
 
 class CustomTopologyNeuralNetwork:
@@ -31,7 +31,7 @@ class CustomTopologyNeuralNetwork:
     #nodes must have type and id fields, link must have nodeFrom, nodeTo and weight fields.
     #the order of nodes determines the input is passed (first input node in list will take first input value and so on)
     #the same is with output
-    def __init__(self, nodes, links, activation_function=sigmoid):
+    def __init__(self, nodes, links, activation_function=sigmoid_3):
         self.nodes = {}
         self.outputs = []
         self.inputs = []

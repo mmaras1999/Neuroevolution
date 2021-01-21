@@ -106,10 +106,12 @@ class Neat:
             self.fenotypes.append(NN(nodes, links))
 
         self.bestgens = []
+        self.mean_hist = []
+        self.min_hist = []
 
         self.species = []
 
-        self.innovationCounter = 0
+        self.innovationCounter =  len(self.genotypes[0].linksGens)
         self.innovationDict = {}
 
         self.nodeCounter = outputs + inputs + 1
@@ -129,9 +131,10 @@ class Neat:
         self.C1 = 1
         self.C2 = 1
         self.C3 = 0.3
-        self.SPECIES_TRESHOLD = 0.75
+        self.SPECIES_TRESHOLD = 3
         self.MAX_STAGNANT_TIME = 15
         self.MAX_ADD_LINK_TRIES = 15
+        self.ADD_NODE_MAX_TRIES = 15
 
         self.BEST_INDIVIDUAL_COUNT = int(popsize * 0.75) 
         self.BEST_POPULATION_FRACTION = 0.75 #how many best indiviuals will be used for mating
@@ -149,9 +152,11 @@ class Neat:
         for i in range(outputs):
             outputNodes.append(Neat.Node(inputs + i + 1, NN.NodeType.OUTPUT, 1))
         
-        for inNode in inputNodes:
+        id = 0
+        for inNode in inputNodes[:-1]:
             for outNode in outputNodes:
-                links.append(Neat.Link(inNode.id, outNode.id, np.random.normal(), -1))
+                links.append(Neat.Link(inNode.id, outNode.id, np.random.normal(), id))
+                id += 1
         
         return inputNodes + outputNodes, links
 
@@ -182,15 +187,16 @@ class Neat:
                 numDisjont += 1
             else:
                 numMatching += 1
-                if abs(gen1.linksGens[i].weight) < 1:
+                if True: #abs(gen1.linksGens[i].weight) < 1:
                     weightsDiff += abs(gen1.linksGens[i].weight - gen2.linksGens[j].weight)
-                else:
-                    weightsDiff += abs(gen1.linksGens[i].weight - gen2.linksGens[j].weight) / abs(gen1.linksGens[i].weight)
+                # else:
+                    # weightsDiff += abs(gen1.linksGens[i].weight - gen2.linksGens[j].weight) / abs(gen1.linksGens[i].weight)
                 i += 1
                 j += 1
 
         numExcess = len(gen1.linksGens) - i + len(gen2.linksGens) - j
         N = max(len(gen1.linksGens), len(gen2.linksGens))
+        if numMatching == 0: numMatching = 1 #prevent divide by zero
 
         return  self.C1 * numExcess / N  + self.C2 * numDisjont / N + self.C3 * weightsDiff / numMatching
 
@@ -222,12 +228,16 @@ class Neat:
             return
         
         linkToDivide = None
-        while not linkToDivide:
+        for _ in range(self.ADD_NODE_MAX_TRIES):
             linkId = np.random.randint(len(genotype.linksGens))
             link = genotype.linksGens[linkId]
             if link.disabled or genotype.nodesGens[link.nodeFrom].type == NN.NodeType.BIAS:
                 continue
             linkToDivide = link
+            break
+        
+        if not linkToDivide:
+            return
         
         linkToDivide.disabled = True
         id1 = linkToDivide.nodeFrom
@@ -271,10 +281,10 @@ class Neat:
             return
         if np.random.uniform() <= self.WEIGHT_PERTUBATION_PBB:
             for link in genotype.linksGens:
-                if abs(link.weight) > 1:
-                    link.weight *= 1 - np.random.uniform(-self.PERTUBATION_RANGE, self.PERTUBATION_RANGE)
-                else:
-                    link.weight += np.random.uniform(-self.PERTUBATION_RANGE, self.PERTUBATION_RANGE)
+                # if abs(link.weight) > 1:
+                #     link.weight *= 1 - np.random.uniform(-self.PERTUBATION_RANGE, self.PERTUBATION_RANGE)
+                # else:
+                link.weight += np.random.uniform(-self.PERTUBATION_RANGE, self.PERTUBATION_RANGE)
 
         else:
             for link in genotype.linksGens:
@@ -341,17 +351,11 @@ class Neat:
         self.nodesDict = {}
         self.innovationDict = {}
 
-
         #save best genotype
         best_id = np.argmax(scores)
         self.bestgens.append((self.genotypes[best_id],scores[best_id], self.fenotypes[best_id]))
-
-        # best = np.argsort(-scores)[:self.BEST_INDIVIDUAL_COUNT]
-        # copied = self.genotypes
-        # self.genotypes = []
-        # for i in best:
-        #     self.genotypes.append(copied[i])
-        # scores = scores[best]
+        self.mean_hist.append(scores.mean())
+        self.min_hist.append(scores.min())
 
         for i in range(len(scores)):
             self.genotypes[i].fitness = scores[i]
@@ -360,6 +364,7 @@ class Neat:
                 if self.getDistance(species.getLeader(), self.genotypes[i]) <= self.SPECIES_TRESHOLD:
                     species.add(self.genotypes[i])
                     added = True
+                    break
             
             if not added:
                 self.species.append(Neat.Species(self.genotypes[i]))
@@ -384,6 +389,7 @@ class Neat:
         meanSharedFitness = 0
         for species in self.species:
             meanSharedFitness += species.totalSharedFitness
+        
         meanSharedFitness /= self.popsize
 
         if verbose:
@@ -396,9 +402,10 @@ class Neat:
         if verbose:
             print("and the new pop size before fixing is:", newPopSize)
         while newPopSize > self.popsize:
-            newPopSize -= 1
             id = np.random.choice(len(self.species))
-            self.species[id].childrenCount -= 1
+            if self.species[id].childrenCount > 1:
+                self.species[id].childrenCount -= 1
+                newPopSize -= 1
 
         while newPopSize < self.popsize:
             newPopSize += 1
@@ -407,6 +414,9 @@ class Neat:
 
         if verbose:
             print("new population size fixed")
+            print("species info")
+            for species in self.species:
+                print(f"\tspecies info: mean = {species.totalSharedFitness} size = {len(species.population)} children = {species.childrenCount}")
         newGenotypes = []
         
         for species in self.species:
@@ -417,14 +427,14 @@ class Neat:
             if n > self.SMALL_POPULATION_TRESHOLD:
                 species.keepBestGenotypes(self.BEST_POPULATION_FRACTION)
                 needToCopyBest = True
-                probs = np.array([genotype.fitness for genotype in species.population])
+                probs = np.array([genotype.fitness for genotype in species.population], dtype=np.float64)
                 probs -= probs.min()
                 if (probs > 0).sum() < 2:
-                    probs = np.ones(n) / n
+                    probs = np.ones(len(probs)) / len(probs)
                 else:
                     # probs += 0.1 / n
                     probs /= probs.sum()
-
+            
             for i in range(species.childrenCount):
                 if needToCopyBest:
                     newGenotypes.append(copy.deepcopy(species.population[0]))
@@ -440,7 +450,6 @@ class Neat:
                     child = self.crossover(species.population[id1], species.population[id2])
                     self.mutate(child, isBigPopulation) 
                     newGenotypes.append(child)
-
 
         self.genotypes = newGenotypes
         self.fenotypes = []
