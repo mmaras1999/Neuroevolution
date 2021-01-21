@@ -27,12 +27,12 @@ class beamriderThread(Process):
                 self.input_size, self.topology, ind)
                 ) for ind in self.population])
 
-cma_es = CMA_ES_Active(np.zeros(calc_weight_count(128, topology)), 1.0)
-#cma_es = load_obj(1500, 'models/cmaes_pong_v8')
+#cma_es = CMA_ES_Active(np.zeros(calc_weight_count(128, topology)), 1.0)
+cma_es = load_obj(250, 'models/beamrider/cmaes_v0')
     
 games = [BeamRiderGame() for i in range(_processes)]
 
-generation = 0
+generation = 250
 
 while not cma_es.terminate():   
     generation += 1
@@ -55,6 +55,6 @@ while not cma_es.terminate():
     cma_es.update(population, f_eval)
  
 
-    if generation % 10 == 0:
+    if generation % 200 == 0:
         save_obj(cma_es, generation, 'models/beamrider/cmaes_v0')
 

@@ -107,7 +107,7 @@ class PongGame:
     
             if end:
                 if reward == 1.0:
-                    return self.score - frames_played / 1000.0
+                    return 100.0 + self.score - frames_played / 1000.0
                 return self.score + frames_played / 1000.0
             
             if wait is not None:

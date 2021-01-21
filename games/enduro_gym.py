@@ -3,21 +3,12 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
-class BeamRiderGame:
+class EnduroGame:
     def __init__(self):
-        self.env = gym.make('BeamRider-ram-v0')
+        self.env = gym.make('Enduro-ram-v0')
 
-    #* Available moves:
-    #* 1 - fire
-    #* 2 - special
-    #* 3 - right
-    #* 4 - left
-    #? 5 - right and special
-    #? 6 - left and special
-    #? 7 - right and fire
-    #? 8 - left and fire
-    def make_move(self, prob):
-        return np.random.choice(a=[1, 2, 3, 4], p=prob)
+    def make_move(self, prob=None):
+        return np.random.choice(a=[0, 1, 2, 3, 4, 5, 6, 7, 8], p=prob)
     
 
     def play(self, network, render=False, wait=None):
@@ -43,7 +34,10 @@ class BeamRiderGame:
             reward_sum += reward
     
             if end:
-                return reward_sum + frames_played / 1000.0
+                return 
             
             if wait is not None:
                 time.sleep(wait)
+
+game = EnduroGame()
+print(game.play(None, True, 0.01))

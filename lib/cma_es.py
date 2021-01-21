@@ -83,7 +83,7 @@ class CMA_ES_Active:
         self.fitvals = fitvals[ids]
         
         self.best = (x[0], self.fitvals[0])
-        self.bestgens.append(self.best)
+        self.bestgens.append(self.best[1])
         
         self.xmean = (self.weights[:self.µ] @ x[:self.µ]).ravel()
         y = (x - x_old) / self.sigma

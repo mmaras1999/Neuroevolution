@@ -1,4 +1,4 @@
-from games.pong_gym import PongGame
+from games.enduro_gym import EnduroGame
 from lib.cma_es import CMA_ES_Active
 from lib.activator_funcs import sigmoid
 from lib.fixed_top_nn import FixedTopologyNeuralNetwork
@@ -9,9 +9,9 @@ import sys
 import os
 
 _processes = 8
-topology = [(6, sigmoid), (1, sigmoid)]
+topology = [(128, sigmoid), (9, sigmoid)]
 
-class pongThread(Process):
+class beamriderThread(Process):
     def __init__(self, id, output, population, input_size, topology):
         super().__init__()
         self.id = id
@@ -27,12 +27,12 @@ class pongThread(Process):
                 self.input_size, self.topology, ind)
                 ) for ind in self.population])
 
-#cma_es = CMA_ES_Active(np.zeros(calc_weight_count(6, topology)), 1.0)
-cma_es = load_obj(3300, 'models/cmaes_pong_v8')
+cma_es = CMA_ES_Active(np.zeros(calc_weight_count(128, topology)), 1.0)
+#cma_es = load_obj(250, 'models/beamrider/cmaes_v0')
     
-games = [PongGame() for i in range(_processes)]
+games = [EnduroGame() for i in range(_processes)]
 
-generation = 3300
+generation = 0
 
 while not cma_es.terminate():   
     generation += 1
@@ -41,7 +41,7 @@ while not cma_es.terminate():
 
     chunks = np.array_split(population, _processes)
     results = Manager().list([None] * _processes)
-    threads = [pongThread(i, results, chunks[i], 6, topology) for i in range(_processes)]
+    threads = [beamriderThread(i, results, chunks[i], 128, topology) for i in range(_processes)]
 
     for th in threads:
         th.start()
@@ -55,7 +55,6 @@ while not cma_es.terminate():
     cma_es.update(population, f_eval)
  
 
-    if generation % 100 == 0:
-        save_obj(cma_es, generation, 'models/cmaes_pong_v8')
-        #games[0].play_sample_game(FixedTopologyNeuralNetwork(6, topology, cma_es.sample()[0]))
+    if generation % 200 == 0:
+        save_obj(cma_es, generation, 'models/beamrider/cmaes_v0')
 

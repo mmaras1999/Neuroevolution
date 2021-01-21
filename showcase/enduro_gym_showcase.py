@@ -1,4 +1,4 @@
-from games.pong_gym import PongGame
+from games.beamrider_gym import BeamRiderGame
 from lib.cma_es import CMA_ES_Active
 from lib.activator_funcs import sigmoid
 from lib.fixed_top_nn import FixedTopologyNeuralNetwork
@@ -9,9 +9,9 @@ import numpy as np
 import sys
 import os
 
-topology = [(6, sigmoid), (1, sigmoid)]
-cma_es = load_obj(3300, 'models/cmaes_pong_v8')
+topology = [(128, sigmoid), (9, sigmoid)]
+cma_es = load_obj(250, 'models/enduro/cmaes_v0')
     
-game = PongGame()
+game = BeamRiderGame()
 individual = cma_es.sample()[0]
-game.play(FixedTopologyNeuralNetwork(6, topology, individual), True, wait=0.03)
+game.play(FixedTopologyNeuralNetwork(128, topology, individual), True, wait=0.1)
