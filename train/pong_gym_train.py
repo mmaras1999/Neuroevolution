@@ -1,4 +1,4 @@
-from games.pong_gym import PongGame
+from games.pong_gym_v2 import PongGame
 from lib.cma_es import CMA_ES_Active
 from lib.activator_funcs import sigmoid
 from lib.fixed_top_nn import FixedTopologyNeuralNetwork
@@ -21,7 +21,7 @@ class pongThread(Process):
         self.output = output
 
     def run(self):
-        print('running {0}'.format(self.id))
+        # print('running {0}'.format(self.id))
         self.output[self.id] = -np.array([games[self.id].play(
             FixedTopologyNeuralNetwork(
                 self.input_size, self.topology, ind)
@@ -55,7 +55,15 @@ while not cma_es.terminate():
     cma_es.update(population, f_eval)
  
 
+<<<<<<< HEAD
     if generation % 100 == 0:
         save_obj(cma_es, generation, 'models/cmaes_pong_v8')
+=======
+    if generation % 10 == 0:
+        save_obj(cma_es, generation, 'models/cmaes_pong_v13')
+>>>>>>> 8432a14dccf880826e70c35bcbac2ee93c6315ce
         #games[0].play_sample_game(FixedTopologyNeuralNetwork(6, topology, cma_es.sample()[0]))
 
+#v11 -> new fitness (+ 100 for winning), deterministic  -> topology = [(3, sigmoid), (1, sigmoid)]
+#v12 -> new fitness, random: 700 iteration, no improvement :( -> topology = [(3, sigmoid), (1, sigmoid)]
+#v13 -> new fitness, deterministic:( -> topology = [(6, sigmoid), (1, sigmoid)] TODO
