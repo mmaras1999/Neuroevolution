@@ -10,7 +10,7 @@ import numpy as np
 import sys
 import os
 
-_processes = 1
+_processes = 8
 
 class RacingProcess(Process):
     def __init__(self, id, output, population, input_size):
@@ -22,11 +22,11 @@ class RacingProcess(Process):
 
     def run(self):
         # print('running {0}'.format(self.id))
-        self.output[self.id] = np.array([games[self.id].play(ind) for ind in self.population])
+        self.output[self.id] = np.array([games[self.id].play(ind, map_id=3) for ind in self.population])
 
 
 neat = Neat(6, 2)
-# neat = load_obj(175, 'models/neat_pong_v5')
+# neat = load_obj(55, 'models/neat_race_v1')
 
 # for spe in neat.species:
 #     print("spe")
@@ -58,13 +58,9 @@ while True:
     neat.update(f_eval, verbose=True) #neat maximize function evals
 
     if generation % 5 == 0:
-        save_obj(neat, generation, 'models/neat_pong_v6')
-        games[0].play(neat.bestgens[-1][2], render=True)
+        save_obj(neat, generation, 'models/neat_race_v3')
+        games[0].play(neat.bestgens[-1][2], render=True,  map_id=3)
+        games[0].play(neat.bestgens[-1][2], render=True,  map_id=1)
         print(neat.bestgens[-1][0].nodesGens, neat.bestgens[-1][0].linksGens)
 
 
-
-#v3 -> det move, old neat
-#v4 -> random move, old neat
-#v5 -> detr move, new neat, normlaized weights diff, treshold = 0.75 TODO train more
-#v6 -> detr move, new neat, weights diff, treshold = 3 TODO train more

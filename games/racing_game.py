@@ -71,7 +71,7 @@ class RacingGame:
 
             self.RAY_LENGTH = 150
             self.RAY_ANGLES = [i * math.pi / 4 for i in range(-2, 3)]
-            self.TURN_ANGLE = 10 / 180 * math.pi
+            self.TURN_ANGLE = 12 / 180 * math.pi
 
             self.distances = np.zeros(len(self.RAY_ANGLES))
 
@@ -93,22 +93,19 @@ class RacingGame:
                 self.distances[i]= minDistance
 
         def update(self, speed, turn):
-            if speed == 1:
-                if self.velocity.length() > 5:
+            if speed == 1 and self.velocity.length() < 15:
+                if self.velocity.length() > 8:
                     self.velocity += VectorFromAngle(self.angle) * 0.1
                 else:
                     self.velocity += VectorFromAngle(self.angle) * 0.2
-
-                if self.velocity.length() > 11:
-                    self.velocity = self.velocity / self.velocity.length() * 11
             
-
             if self.velocity.length() > 0.05:
                 if speed == -1:
-                    self.velocity -= VectorFromAngle(self.angle) * 0.3
+                    self.velocity -= VectorFromAngle(self.angle) * 0.4
             else:
                 self.velocity = Vector(0, 0)
-
+            
+            # print(self.velocity.length())
             if self.velocity.length() > 0:
                 back = self.pos - VectorFromAngle(self.angle) * 8
                 front = self.pos + VectorFromAngle(self.angle) * 8
@@ -121,7 +118,9 @@ class RacingGame:
                 newVelocity = newVelocity / newVelocity.length() * self.velocity.length()
                 newAngle = math.atan2(-newVelocity.y, newVelocity.x)
 
-                newVelocity = self.velocity + (newVelocity - self.velocity) * (1 - self.velocity.length() / 12) #drifting
+                newVelocity = self.velocity + (newVelocity - self.velocity) * (1 - self.velocity.length() / 17) #drifting
+
+                newVelocity = newVelocity / newVelocity.length() * self.velocity.length()
 
                 self.angle = newAngle
                 self.pos = self.pos + newVelocity
@@ -148,7 +147,7 @@ class RacingGame:
 
     def __init__(self):
         pygame.init()
-        pygame.display.set_mode((1000, 1000))
+        pygame.display.set_mode((1500, 1000))
         pygame.display.set_caption('Race!')
 
     def addObs(self, dx, dy, a=None, checkpoint=None):
@@ -162,37 +161,208 @@ class RacingGame:
             c = b + checkpoint
             self.checkpoints.append(Line(b.x, b.y, c.x, c.y))
 
-    def init_game(self):
-        self.obstacles = []
-        self.checkpoints = []
-
-        self.addObs(0, -400, a=Vector(100, 700), checkpoint=Vector(100, 0))
-        self.addObs(25, -75)
-        self.addObs(100, -100)
-        self.addObs(75, -25)
-        self.addObs(400, 0, checkpoint=Vector(0, 100))
-        self.addObs(75, 25)
-        self.addObs(100, 100)
-        self.addObs(25, 75)
+    def loadFirstMap(self):
+        self.addObs(0, -550, a=Vector(100, 750), checkpoint=Vector(100, 0))
+        self.addObs(100, -150)
+        self.addObs(100, 0, checkpoint=Vector(0,150))
+        self.addObs(100, 150)
         self.addObs(0, 400, checkpoint=Vector(-100, 0))
+        self.addObs(50, 50, checkpoint=Vector(0, 100))
+        self.addObs(50, -50,checkpoint=Vector(100, 0))
+        self.addObs(0, -400, checkpoint=Vector(100, 0))
+        self.addObs(100, -150)
+        self.addObs(100, 0, checkpoint=Vector(0,150))
+        self.addObs(100, 150)
+        self.addObs(0, 550, checkpoint=Vector(-100, 0))
         self.addObs(-25, 75)
         self.addObs(-100, 100)
         self.addObs(-75, 25)
-        self.addObs(-400, 0, checkpoint=Vector(0, -100))
+        self.addObs(-300, 0, checkpoint=Vector(0, -100))
         self.addObs(-75, -25)
         self.addObs(-100, -100)
         self.addObs(-25, -75)
 
-        self.addObs(0, -400, a=Vector(200, 700))
-        self.addObs(100, -100)
-        self.addObs(400, 0)
-        self.addObs(100, 100)
+        self.addObs(0, -550, a=Vector(200, 750))
+        self.addObs(50, -50)
+        self.addObs(50, 50)
         self.addObs(0, 400)
+        self.addObs(100, 150)
+        self.addObs(100, 0)
+        self.addObs(100, -150)
+        self.addObs(0, -400)
+        self.addObs(50, -50)
+        self.addObs(50, 50)
+        self.addObs(0, 550)
         self.addObs(-100, 100)
-        self.addObs(-400, 0)
+        self.addObs(-300, 0)
         self.addObs(-100, -100)
 
+        self.car = RacingGame.Car(150, 600, self)
+
+    def loadSecondMap(self):
+        self.addObs(0, -400, a=Vector(100, 700), checkpoint=Vector(100, 0))
+        self.addObs(25, -75)
+        self.addObs(100, -100)
+        self.addObs(75, -25)
+        self.addObs(800, 25, checkpoint=Vector(0, 50))
+        self.addObs(75, 25)
+        self.addObs(50, 50)
+        self.addObs(25, 75)
+        self.addObs(25, 400, checkpoint=Vector(-100, 0))
+        self.addObs(-25, 75)
+        self.addObs(-100, 100)
+        self.addObs(-75, 25)
+        self.addObs(-50, 0)
+
+        self.addObs(-50, 50)
+        self.addObs(-50, -50)
+        self.addObs(-50, 50)
+        self.addObs(-50, -50)
+        self.addObs(-50, 50)
+        self.addObs(-50, -50)
+
+        self.addObs(-100, 0)
+        
+        self.addObs(-50, 50)
+        self.addObs(-50, -50)
+        self.addObs(-50, 50)
+        self.addObs(-50, -50)
+        self.addObs(-50, 50)
+        self.addObs(-50, -50)
+
+        self.addObs(-50, 0, checkpoint=Vector(0, -100))
+        self.addObs(-75, -25)
+        self.addObs(-75, -75)
+        self.addObs(-25, -75)
+
+        self.addObs(0, -400, a=Vector(200, 700))
+        self.addObs(100, -100)
+        self.addObs(800, -25)        
+        self.addObs(40, 20)
+        self.addObs(40, 40)
+        self.addObs(20, 40)
+        self.addObs(-25, 400)
+        self.addObs(-100, 100)
+        self.addObs(-50, 0)
+
+        self.addObs(-50, -50)
+        self.addObs(-50, 50)
+        self.addObs(-50, -50)
+        self.addObs(-50, 50)
+        self.addObs(-50, -50)
+        self.addObs(-50, 50)
+
+        self.addObs(-50, 0)
+        
+        self.addObs(-50, -50)
+        self.addObs(-50, 50)
+        self.addObs(-50, -50)
+        self.addObs(-50, 50)
+        self.addObs(-50, -50)
+        self.addObs(-50, 50)
+
+        self.addObs(-100, 0)
+        self.addObs(-75, -75)
+
         self.car = RacingGame.Car(150, 700, self)
+
+    def loadThirdMap(self):
+        self.addObs(-1050, 0, a=Vector(1200, 950), checkpoint=Vector(0, -100))
+        self.addObs(-40, -15)
+        self.addObs(-40, -40)
+        self.addObs(-15, -40)
+        self.addObs(0, -40)
+        self.addObs(15, -40)
+        self.addObs(40, -40)
+        self.addObs(40, -15)
+        self.addObs(40, 0)
+        self.addObs(40, -15)
+        self.addObs(40, -40)
+        self.addObs(15, -40)
+        self.addObs(0, -40)
+        self.addObs(15, -40)
+        self.addObs(40, -40)
+        self.addObs(40, -15)
+        self.addObs(40, 0)
+        self.addObs(40, -15)
+        self.addObs(40, -40, checkpoint=Vector(65, 65))
+        self.addObs(15, -40)
+        self.addObs(0, -40)
+        self.addObs(-15, -40)
+        self.addObs(-40, -40)
+        self.addObs(-40, -15)
+        self.addObs(-40, 0)
+        self.addObs(-40, -15)
+        self.addObs(-40, -40)
+        self.addObs(-15, -40)
+        self.addObs(0, -40, checkpoint=Vector(115, 0))
+        self.addObs(15, -40)
+        self.addObs(40, -40)
+        self.addObs(40, -15)
+        self.addObs(670, 0, checkpoint=Vector(-75, 75))
+        self.addObs(50, 50)
+        self.addObs(0, 200)
+        self.addObs(-50, 50)
+        self.addObs(0, 340)
+        self.addObs(50, 50)
+        self.addObs(100, 0)
+        self.addObs(40, 15)
+        self.addObs(40, 40, checkpoint=Vector(-120, 65))
+        self.addObs(15, 40)
+        self.addObs(0, 40)
+        self.addObs(-15, 40)
+        self.addObs(-40, 40)
+        self.addObs(-40, 15)
+
+        self.addObs(-1000, 0, a=Vector(1150, 850))
+        self.addObs(-10, -10)
+        self.addObs(0, -20)
+        self.addObs(10,-10)
+        self.addObs(40, 0)
+        self.addObs(80, -25)
+        self.addObs(60, -60)
+        self.addObs(25, -60)
+        self.addObs(0, -20)
+        self.addObs(15, -40)
+        self.addObs(40, -40)
+        self.addObs(40, -15)        
+        self.addObs(40, 0)
+        self.addObs(40, -15)
+        self.addObs(50, -50)
+        self.addObs(25, -60)
+        self.addObs(0, -100)
+        self.addObs(-25, -60)
+        self.addObs(-60, -60)
+        self.addObs(-60, -25)
+        self.addObs(-40, 0)
+        self.addObs(-20, -20)
+        self.addObs(0, -40)
+        self.addObs(20, -20)
+        self.addObs(550, 0)
+        self.addObs(50, 50)
+        self.addObs(0, 50)
+        self.addObs(-80, 80)
+        self.addObs(0, 450)
+        self.addObs(60, 60)
+        self.addObs(150, 20)
+        self.addObs(10, 10)
+        self.addObs(0, 20)
+        self.addObs(-10, 10)
+        # self.addObs(0, 920)
+        
+
+        self.car = RacingGame.Car(1000, 900, self, angle = math.pi)
+
+    def init_game(self, map_id=1):
+        self.obstacles = []
+        self.checkpoints = []
+        if map_id == 1:
+            self.loadFirstMap()
+        if map_id == 2:
+            self.loadSecondMap()
+        if map_id == 3:
+            self.loadThirdMap()
+
         self.nextCheckpoint = 0
 
         self.updateCheckpoint()
@@ -250,12 +420,12 @@ class RacingGame:
 
         return speed, turn
 
-    def play(self, NN, render=True, wait=None):
-        self.init_game()
+    def play(self, NN, render=False, wait=None, map_id=1):
+        self.init_game(map_id)
 
         clock = pygame.time.Clock()
         tiks = 0
-        while self.gameState == 1 and tiks < 3000:
+        while self.gameState == 1 and tiks < 2000:
             tiks += 1
             # for event in pygame.event.get():
             #     if event.type == QUIT:
@@ -279,16 +449,49 @@ class RacingGame:
             speed, turn = self.make_move(out)
 
             self.car.update(speed, turn)
-
             self.checkLost()
             self.updateCheckpoint()
 
             if render:
-                clock.tick(300)
+                clock.tick(100)
                 self.draw(pygame.display.get_surface())
                 pygame.display.flip()
         
-        return self.checkpointPassed * 700 +  700 - self.distanceToCheckpoint
+        return self.checkpointPassed * 1100 +  1100 - self.distanceToCheckpoint
+
+    
+    def test(self):
+        self.init_game(map_id=3)
+
+        clock = pygame.time.Clock()
+        tiks = 0
+        while self.gameState == 1 and tiks < 2000:
+            tiks += 1
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    return
+
+            speed = 0
+            turn = 0
+            keys=pygame.key.get_pressed()
+            if keys[pygame.K_a]:
+                turn = 1
+            if keys[pygame.K_d]:
+                turn = -1
+            if keys[pygame.K_w]:
+                speed = 1
+            if keys[pygame.K_s]:
+                speed = -1
+
+            self.car.update(speed, turn)
+            self.checkLost()
+            self.updateCheckpoint()
+
+            clock.tick(30)
+            self.draw(pygame.display.get_surface())
+            pygame.display.flip()
+        
+        return self.checkpointPassed * 1100 +  1100 - self.distanceToCheckpoint
                     
 
 
