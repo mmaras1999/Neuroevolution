@@ -19,10 +19,15 @@ class BalanceGame:
             return 1
     
 
-    def play(self, network, render=False, wait=None, move_fun=make_move_det, games_amount=10):
+    def play(self, network, render=False, wait=None, move_fun=make_move_det, games_amount=25):
         result = 0
-        for _ in range(games_amount):
-            observation = self.env.reset()      
+        polePos = [-0.05, -0.025, 0.0, 0.025, 0.05]
+        cartPos = [-0.05, -0.025, 0.0, 0.025, 0.05]
+        poss = [(pole, cart) for cart in cartPos for pole in polePos][:games_amount]
+        for cart, pole in poss:
+            observation = self.env.reset()   
+            self.env.state[0] = cart
+            self.env.state[2] = pole   
             score = 0
             frames_played = 0
 
