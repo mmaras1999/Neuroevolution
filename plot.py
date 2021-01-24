@@ -6,7 +6,7 @@ from lib.utilities import load_obj
 
 #check best[644] (645 population), had -14 score v10
 #check best[1163] (1164 population), had -15.8 score v10
-model = load_obj(200, 'models/neat_race_v3') 
+model = load_obj(200, 'models/neat_race_v1') 
 
 scores = []
 for gen, scr, fen in model.bestgens:
