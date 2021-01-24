@@ -106,8 +106,7 @@ class Neat:
             self.fenotypes.append(NN(nodes, links))
 
         self.bestgens = []
-        self.mean_hist = []
-        self.min_hist = []
+        self.genmeans = []
 
         self.species = []
 
@@ -354,8 +353,7 @@ class Neat:
         #save best genotype
         best_id = np.argmax(scores)
         self.bestgens.append((self.genotypes[best_id],scores[best_id], self.fenotypes[best_id]))
-        self.mean_hist.append(scores.mean())
-        self.min_hist.append(scores.min())
+        self.genmeans.append(scores.mean())
 
         for i in range(len(scores)):
             self.genotypes[i].fitness = scores[i]

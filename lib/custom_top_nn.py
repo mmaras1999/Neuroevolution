@@ -100,6 +100,5 @@ class CustomTopologyNeuralNetwork:
             self.nodes[node_id].score = self.act_fun(score)
         
         for node_id in self.outputs:
-            results.append(self.nodes[node_id].score)
-        
+            results.append(self.nodes[node_id].score)        
         return np.array(results)
