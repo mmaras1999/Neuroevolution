@@ -28,11 +28,11 @@ class pongThread(Process):
                 ) for ind in self.population])
 
 #cma_es = CMA_ES_Active(np.zeros(calc_weight_count(6, topology)), 1.0)
-cma_es = load_obj(3300, 'models/cmaes_pong_v8')
+cma_es = load_obj(4700, 'models/cmaes_pong_v8')
     
 games = [PongGame() for i in range(_processes)]
 
-generation = 3300
+generation = 4700
 
 while not cma_es.terminate():   
     generation += 1

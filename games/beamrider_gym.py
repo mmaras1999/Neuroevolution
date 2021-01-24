@@ -42,7 +42,7 @@ class BeamRiderGame:
             observation, reward, end, info = self.env.step(move)
             reward_sum += reward
     
-            if end:
+            if end or frames_played >= 2000:
                 return reward_sum + frames_played / 1000.0
             
             if wait is not None:

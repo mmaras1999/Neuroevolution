@@ -9,9 +9,9 @@ import numpy as np
 import sys
 import os
 
-topology = [(64, sigmoid), (4, sigmoid)]
-cma_es = load_obj(500, 'models/beamrider/cmaes_v0')
+topology = [(64, sigmoid), (64, sigmoid), (4, sigmoid)]
+lm_ma_es = load_obj(3100, 'models/beamrider/lm_ma_es_v1')
     
 game = BeamRiderGame()
-individual = cma_es.sample()[0]
+individual = lm_ma_es.sample()[0]
 game.play(FixedTopologyNeuralNetwork(128, topology, individual), True, wait=0.1)

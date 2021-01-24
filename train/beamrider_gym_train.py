@@ -1,5 +1,5 @@
 from games.beamrider_gym import BeamRiderGame
-from lib.cma_es import CMA_ES_Active
+from lib.lm_ma_es import LM_MA_ES
 from lib.activator_funcs import sigmoid
 from lib.fixed_top_nn import FixedTopologyNeuralNetwork
 from lib.utilities import save_obj, load_obj, calc_weight_count
@@ -9,7 +9,7 @@ import sys
 import os
 
 _processes = 8
-topology = [(64, sigmoid), (4, sigmoid)]
+topology = [(64, sigmoid), (64, sigmoid), (4, sigmoid)]
 
 class beamriderThread(Process):
     def __init__(self, id, output, population, input_size, topology):
@@ -27,17 +27,17 @@ class beamriderThread(Process):
                 self.input_size, self.topology, ind)
                 ) for ind in self.population])
 
-#cma_es = CMA_ES_Active(np.zeros(calc_weight_count(128, topology)), 1.0)
-cma_es = load_obj(250, 'models/beamrider/cmaes_v0')
+#lm_ma_es = LM_MA_ES(np.zeros(calc_weight_count(128, topology)), 1.0)
+lm_ma_es = load_obj(1500, 'models/beamrider/lm_ma_es_v1')
     
 games = [BeamRiderGame() for i in range(_processes)]
 
-generation = 250
+generation = 1500
 
-while not cma_es.terminate():   
+while True:   
     generation += 1
     print('Generation:', generation)
-    population = cma_es.sample()
+    population  = lm_ma_es.sample()
 
     chunks = np.array_split(population, _processes)
     results = Manager().list([None] * _processes)
@@ -52,9 +52,8 @@ while not cma_es.terminate():
     f_eval = np.concatenate(tuple(results))
     print(f_eval)
     print(f_eval.mean())
-    cma_es.update(population, f_eval)
- 
+    lm_ma_es.update(population, f_eval)
 
-    if generation % 200 == 0:
-        save_obj(cma_es, generation, 'models/beamrider/cmaes_v0')
+    if generation % 100 == 0:
+        save_obj(lm_ma_es, generation, 'models/beamrider/lm_ma_es_v1')
 
