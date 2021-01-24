@@ -1,4 +1,4 @@
-from games.balance_game import BalanceGame
+from games.racing_game import RacingGame
 from lib.neat import Neat
 from lib.custom_top_nn import CustomTopologyNeuralNetwork as NN
 from lib.cma_es import CMA_ES_Active
@@ -12,7 +12,7 @@ import os
 
 _processes = 8
 
-class BalanceProcess(Process):
+class RacingProcess(Process):
     def __init__(self, id, output, population, input_size):
         super().__init__()
         self.id = id
@@ -22,20 +22,15 @@ class BalanceProcess(Process):
 
     def run(self):
         # print('running {0}'.format(self.id))
-        self.output[self.id] = np.array([games[self.id].play(ind, move_fun=BalanceGame.make_move_det) for ind in self.population])
+        self.output[self.id] = np.array([games[self.id].play(ind, map_id=1) for ind in self.population])
 
 
-neat = Neat(4, 1)
-# neat = load_obj(175, 'models/neat_pong_v5')
+neat = Neat(6, 2)
+neat = load_obj(100, 'models/neat_race_v1')
 
-# for spe in neat.species:
-#     print("spe")
-#     for gen in spe.population:
-#         print(len(gen.nodesGens), len(gen.linksGens), end='\t')
+games = [RacingGame() for i in range(_processes)]
 
-games = [BalanceGame() for i in range(_processes)]
-
-generation = 0
+generation = 100
 
 while True:  
     generation += 1
@@ -44,7 +39,7 @@ while True:
 
     chunks = np.array_split(population, _processes)
     results = Manager().list([None] * _processes)
-    threads = [BalanceProcess(i, results, chunks[i], 2) for i in range(_processes)]
+    threads = [RacingProcess(i, results, chunks[i], 2) for i in range(_processes)]
 
     for th in threads:
         th.start()
@@ -53,16 +48,15 @@ while True:
         th.join()
 
     f_eval = np.concatenate(tuple(results))
-    # print(f_eval)
+    print(f_eval)
     print(f_eval.mean(), f_eval.max(), f_eval.min())
     neat.update(f_eval, verbose=True) #neat maximize function evals
 
     if generation % 5 == 0:
-        save_obj(neat, generation, 'models/neat_balance_v2')
+        save_obj(neat, generation, 'models/neat_race_v1')
+        games[0].play(neat.bestgens[-1][2], render=True,  map_id=1)
+        games[0].play(neat.bestgens[-1][2], render=True,  map_id=2)
+        games[0].play(neat.bestgens[-1][2], render=True,  map_id=3)
         print(neat.bestgens[-1][0].nodesGens, neat.bestgens[-1][0].linksGens)
-        games[0].play(neat.bestgens[-1][2], render=True, games_amount=1)
 
 
-
-#v1 - 10 random games
-#v2 - 25 specific games 

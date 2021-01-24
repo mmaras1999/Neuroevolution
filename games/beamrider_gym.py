@@ -36,7 +36,10 @@ class BeamRiderGame:
             input = np.array(observation)
 
             prob = network.eval(input)
-            prob = prob / prob.sum()
+            if prob.sum() == 0:
+                prob = np.ones(4) / 4
+            else:
+                prob = prob / prob.sum()
             move = self.make_move(prob)
 
             observation, reward, end, info = self.env.step(move)

@@ -56,8 +56,9 @@ while True:
     print(f_eval.mean(), f_eval.max(), f_eval.min())
     cma_es.update(population, f_eval)
 
-    if generation % 5 == 0:
-        save_obj(cma_es, generation, 'models/cmaes_balance_v1')
-        games[0].play(FixedTopologyNeuralNetwork(4, topology, cma_es.sample()[0]), render=True)
+    if generation % 10 == 0:
+        save_obj(cma_es, generation, 'models/cmaes_balance_v2')
+        games[0].play(FixedTopologyNeuralNetwork(4, topology, cma_es.bestgens[-1][0]), render=True, games_amount=1)
 
-
+#v1 - 10 random games
+#v2 - 25 specific games -> 200 iterations

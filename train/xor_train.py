@@ -27,36 +27,41 @@ class XorProcess(Process):
         self.output[self.id] = np.array([games[self.id].play(ind) for ind in self.population])
 
 
-neat = Neat(2, 1)
+meanGenerations = 0
 
-games = [XorGame() for i in range(_processes)]
+for i in range(20):
+    neat = Neat(2, 1)
 
-generation = 0
+    games = [XorGame() for i in range(_processes)]
 
-while True:  
-    generation += 1
-    print('Generation:', generation)
-    population = neat.getFenotypes()
+    generation = 0
 
-    chunks = np.array_split(population, _processes)
-    results = Manager().list([None] * _processes)
-    threads = [XorProcess(i, results, chunks[i], 2, topology) for i in range(_processes)]
+    while True:  
+        generation += 1
+        print('Generation:', generation)
+        population = neat.getFenotypes()
 
-    for th in threads:
-        th.start()
-    
-    for th in threads:
-        th.join()
+        chunks = np.array_split(population, _processes)
+        results = Manager().list([None] * _processes)
+        threads = [XorProcess(i, results, chunks[i], 2, topology) for i in range(_processes)]
 
-    f_eval = np.concatenate(tuple(results))
-    print(f_eval)
-    print(f_eval.mean(), f_eval.max(), f_eval.min())
-    neat.update(f_eval, verbose=True) #neat maximize function evals
+        for th in threads:
+            th.start()
+        
+        for th in threads:
+            th.join()
 
-    if abs(4 - f_eval.max()) < 1e-5:
-        # save_obj(neat, generation, 'models/neat_xor_v6')
-        games[0].play(neat.bestgens[-1][2], render=True)
-        print(neat.bestgens[-1][0].nodesGens, neat.bestgens[-1][0].linksGens)
-        break
+        f_eval = np.concatenate(tuple(results))
+        # print(f_eval)
+        print(f_eval.mean(), f_eval.max(), f_eval.min(), len(neat.species))
+        neat.update(f_eval, verbose=False) #neat maximize function evals
 
+        if abs(4 - f_eval.max()) < 1e-5:
+            # save_obj(neat, generation, 'models/neat_xor_v6')
+            games[0].play(neat.bestgens[-1][2], render=True)
+            print(neat.bestgens[-1][0].nodesGens, neat.bestgens[-1][0].linksGens)
+            meanGenerations += generation
+            break
+
+print(meanGenerations / 20)
 

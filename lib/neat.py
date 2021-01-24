@@ -106,8 +106,7 @@ class Neat:
             self.fenotypes.append(NN(nodes, links))
 
         self.bestgens = []
-        self.mean_hist = []
-        self.min_hist = []
+        self.genmeans = []
 
         self.species = []
 
@@ -131,7 +130,7 @@ class Neat:
         self.C1 = 1
         self.C2 = 1
         self.C3 = 0.3
-        self.SPECIES_TRESHOLD = 3
+        self.SPECIES_TRESHOLD = 1
         self.MAX_STAGNANT_TIME = 15
         self.MAX_ADD_LINK_TRIES = 15
         self.ADD_NODE_MAX_TRIES = 15
@@ -187,10 +186,10 @@ class Neat:
                 numDisjont += 1
             else:
                 numMatching += 1
-                if True: #abs(gen1.linksGens[i].weight) < 1:
+                if abs(gen1.linksGens[i].weight) < 1:
                     weightsDiff += abs(gen1.linksGens[i].weight - gen2.linksGens[j].weight)
-                # else:
-                    # weightsDiff += abs(gen1.linksGens[i].weight - gen2.linksGens[j].weight) / abs(gen1.linksGens[i].weight)
+                else:
+                    weightsDiff += abs(gen1.linksGens[i].weight - gen2.linksGens[j].weight) / abs(gen1.linksGens[i].weight)
                 i += 1
                 j += 1
 
@@ -281,10 +280,10 @@ class Neat:
             return
         if np.random.uniform() <= self.WEIGHT_PERTUBATION_PBB:
             for link in genotype.linksGens:
-                # if abs(link.weight) > 1:
-                #     link.weight *= 1 - np.random.uniform(-self.PERTUBATION_RANGE, self.PERTUBATION_RANGE)
-                # else:
-                link.weight += np.random.uniform(-self.PERTUBATION_RANGE, self.PERTUBATION_RANGE)
+                if abs(link.weight) > 1:
+                    link.weight *= 1 - np.random.uniform(-self.PERTUBATION_RANGE, self.PERTUBATION_RANGE)
+                else:
+                    link.weight += np.random.uniform(-self.PERTUBATION_RANGE, self.PERTUBATION_RANGE)
 
         else:
             for link in genotype.linksGens:
@@ -354,8 +353,7 @@ class Neat:
         #save best genotype
         best_id = np.argmax(scores)
         self.bestgens.append((self.genotypes[best_id],scores[best_id], self.fenotypes[best_id]))
-        self.mean_hist.append(scores.mean())
-        self.min_hist.append(scores.min())
+        self.genmeans.append(scores.mean())
 
         for i in range(len(scores)):
             self.genotypes[i].fitness = scores[i]
