@@ -61,7 +61,7 @@ class LM_MA_ES:
         self.z = self.z[ids]
         self.d = self.d[ids]
 
-        self.bestgens.append(fitvals[0])
+        self.bestgens.append(self.fitvals[0])
         self.genmeans.append(fitvals.mean())
         
         self.best = (x[0], self.fitvals[0])
