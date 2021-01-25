@@ -11,7 +11,7 @@ import sys
 import os
 
 _processes = 8
-topology = [(6, sigmoid), (2, sigmoid)]
+topology = [(4, sigmoid), (2, sigmoid)]
 
 class RacingProcess(Process):
     def __init__(self, id, output, population, input_size, topology):
@@ -30,8 +30,8 @@ class RacingProcess(Process):
             map_id=3) for ind in self.population])
 
 
-lm_ma_es = LM_MA_ES(np.zeros(calc_weight_count(6, topology)), 1, popsize=32)
-# lm_ma_es = load_obj(2900, 'models/maes_racing_v1')
+cma_es = CMA_ES_Active(np.zeros(calc_weight_count(6, topology)), 1, popsize=32)
+# cma_es = load_obj(2900, 'models/maes_racing_v1')
 
 games = [RacingGame() for i in range(_processes)]
 
@@ -40,7 +40,7 @@ generation = 0
 while True:  
     generation += 1
     print('Generation:', generation)
-    population = lm_ma_es.sample()
+    population = cma_es.sample()
 
     chunks = np.array_split(population, _processes)
     results = Manager().list([None] * _processes)
@@ -55,11 +55,10 @@ while True:
     f_eval = np.concatenate(tuple(results))
     print(f_eval)
     print(f_eval.mean(), f_eval.max(), f_eval.min())
-    lm_ma_es.update(population, f_eval)
+    cma_es.update(population, f_eval)
 
-    if generation % 10 == 0:
-        save_obj(lm_ma_es, generation, 'models/maes_racing_v2')
-        print('score:', games[0].play(FixedTopologyNeuralNetwork(6, topology, lm_ma_es.sample()[0]), render=True, map_id=3))
+    if generation % 25 == 0:
+        save_obj(cma_es, generation, 'models/cmaes_racing_v1')
+        print('score:', games[0].play(FixedTopologyNeuralNetwork(6, topology, cma_es.sample()[0]), render=True, map_id=3))
 
-#v1 - 10 random games
-#v2 - 25 specific games -> 200 iterations
+#v1 - topology = [(4, sigmoid), (2, sigmoid)]
