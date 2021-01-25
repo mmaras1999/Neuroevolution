@@ -10,8 +10,6 @@ class Game2048:
         pygame.init()
         pygame.display.set_mode((1000, 1000))
         pygame.display.set_caption('2048 NN')
-        self.board = [[None for i in range(4)] for i in range(4)]
-        self.place_random()
         self.fontBig = pygame.font.SysFont('robotobold', 128)
         self.fontNorm = pygame.font.SysFont('robotoextrabold', 48)
         self.colors = [(255, 255, 255), 
@@ -39,6 +37,11 @@ class Game2048:
                        (230, 92, 0),
                        (230, 92, 0),
                        (230, 92, 0)]
+    
+    def initMap(self):
+        self.lastMove = -1
+        self.board = [[None for i in range(4)] for i in range(4)]
+        self.place_random()
 
 
     ### check if move is valid
@@ -76,7 +79,7 @@ class Game2048:
                             self.board[row][column + 1] == self.board[row][column]):
                             return True
 
-        return False;
+        return False
 
     ### performs a move
     def update_move(self, move):
@@ -200,8 +203,9 @@ class Game2048:
 
     ### tries to perform a move, returns a score if lost, None otherwise
     def make_move(self, prob):
-
         move = np.random.choice(a=[0, 1, 2, 3], p=prob)
+        # move = np.argmax(prob)
+        # self.lastMove = move
 
         ## check if move is valid
         if not self.check_valid_move(move):
@@ -220,7 +224,8 @@ class Game2048:
         return None
 
     def play(self, network, render=False, wait=None):
-        
+        self.initMap()
+
         while(True):
 
             if render:
@@ -228,11 +233,13 @@ class Game2048:
                 pygame.display.flip()
 
             input = np.array(self.board).ravel()
-            input[input == None] = 0
-            input /= (2 * 32768.0)
+            input[input == None] = 1.0
+            input = np.log2(input.astype(float))
+            # input = np.concatenate((input, [self.lastMove]))
 
-            #prob = network.eval(input)
-            prob = np.array([0.25, 0.25, 0.25, 0.25])
+            prob = network.eval(input)
+            prob += 0.0001
+            # prob = np.array([0.25, 0.25, 0.25, 0.25])
             prob = prob / prob.sum()
             res = self.make_move(prob)
 
@@ -267,5 +274,5 @@ class Game2048:
                     rct = bzzt.get_rect(center=(x + 90, y + 90))
                     screen.blit(bzzt, rct)
 
-game = Game2048()
-game.play(None, True, 1)
+# game = Game2048()
+# game.play(None, True, 1)
