@@ -203,9 +203,9 @@ class Game2048:
 
     ### tries to perform a move, returns a score if lost, None otherwise
     def make_move(self, prob):
-        move = np.random.choice(a=[0, 1, 2, 3], p=prob)
-        # move = np.argmax(prob)
-        # self.lastMove = move
+        # move = np.random.choice(a=[0, 1, 2, 3], p=prob)
+        move = np.argmax(prob)
+        self.lastMove = move
 
         ## check if move is valid
         if not self.check_valid_move(move):
@@ -224,30 +224,34 @@ class Game2048:
         return None
 
     def play(self, network, render=False, wait=None):
-        self.initMap()
+        score = 0
+        for _ in range(10 if not render else 1):
+            self.initMap()
 
-        while(True):
+            while(True):
 
-            if render:
-                self.display(pygame.display.get_surface())
-                pygame.display.flip()
+                if render:
+                    self.display(pygame.display.get_surface())
+                    pygame.display.flip()
 
-            input = np.array(self.board).ravel()
-            input[input == None] = 1.0
-            input = np.log2(input.astype(float))
-            # input = np.concatenate((input, [self.lastMove]))
+                input = np.array(self.board).ravel()
+                input[input == None] = 1.0
+                input = np.log2(input.astype(float))
+                input = np.concatenate((input, [self.lastMove]))
 
-            prob = network.eval(input)
-            prob += 0.0001
-            # prob = np.array([0.25, 0.25, 0.25, 0.25])
-            prob = prob / prob.sum()
-            res = self.make_move(prob)
+                prob = network.eval(input)
+                prob += 0.0001
+                # prob = np.array([0.25, 0.25, 0.25, 0.25])
+                prob = prob / prob.sum()
+                res = self.make_move(prob)
 
-            if res is not None:
-                return res
+                if res is not None:
+                    score += res
+                    break
 
-            if wait is not None:
-                time.sleep(wait)
+                if wait is not None:
+                    time.sleep(wait)
+        return score / 10
 
     def display(self, screen):
         screen.fill((255, 153, 102))

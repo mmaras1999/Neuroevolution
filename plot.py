@@ -5,13 +5,13 @@ import matplotlib.pyplot as plt
 from lib.utilities import load_obj
 
 
-model = load_obj(700, 'models/maes_racing_v1') 
-scores = model.bestgens
+# model = load_obj(700, 'models/maes_racing_v1') 
+# scores = model.bestgens
 
-# model = load_obj(200, 'models/neat_race_v3')
-# scores = [] 
-# for gen, scr, fen in model.bestgens:
-    # scores.append(scr) 
+model = load_obj(1100, 'models/neat_2048_v1')
+scores = [] 
+for gen, scr, fen in model.bestgens:
+    scores.append(scr) 
 
 plt.plot(scores, label='best')
 plt.plot(model.genmeans, label='mean')

@@ -25,7 +25,8 @@ class RacingProcess(Process):
         self.output[self.id] = np.array([games[self.id].play(ind) for ind in self.population])
 
 
-neat = Neat(16, 4)
+neat = Neat(17, 4)
+# neat = load_obj(900, 'models/neat_2048_v1')
 
 games = [Game2048() for i in range(_processes)]
 
@@ -51,9 +52,9 @@ while True:
     print(f_eval.mean(), f_eval.max(), f_eval.min())
     neat.update(f_eval, verbose=True) #neat maximize function evals
 
-    if generation % 20 == 0:
-        # save_obj(neat, generation, 'models/neat_2048_v2')
-        print(games[0].play(neat.bestgens[-1][2], render=True, wait=0.3))
+    if generation % 50 == 0:
+        save_obj(neat, generation, 'models/neat_2048_v2')
+        print(games[0].play(neat.bestgens[-1][2], render=True, wait=0.1))
         print(neat.bestgens[-1][0].nodesGens, neat.bestgens[-1][0].linksGens)
 
-
+#v2 changes: add last move to input and argmas move
