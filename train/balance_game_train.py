@@ -30,7 +30,7 @@ class BalanceProcess(Process):
                 ) for ind in self.population])
 
 
-cma_es = CMA_ES_Active(np.zeros(calc_weight_count(4, topology)), 1, popsize=32)
+cma_es = CMA_ES_Active(np.zeros(calc_weight_count(4, topology)), 1)
 
 games = [BalanceGame() for i in range(_processes)]
 
@@ -58,7 +58,7 @@ while True:
 
     if generation % 10 == 0:
         save_obj(cma_es, generation, 'models/cmaes_balance_v2')
-        games[0].play(FixedTopologyNeuralNetwork(4, topology, cma_es.bestgens[-1][0]), render=True, games_amount=1)
+        games[0].play(FixedTopologyNeuralNetwork(4, topology, cma_es.sample()[0]), render=True, games_amount=1)
 
 #v1 - 10 random games
 #v2 - 25 specific games -> 200 iterations

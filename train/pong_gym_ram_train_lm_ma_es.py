@@ -1,5 +1,5 @@
-from games.pong_gym_v2 import PongGame
-from lib.cma_es import CMA_ES_Active
+from games.pong_gym_ram import PongGame
+from lib.lm_ma_es import LM_MA_ES
 from lib.activator_funcs import sigmoid
 from lib.fixed_top_nn import FixedTopologyNeuralNetwork
 from lib.utilities import save_obj, load_obj, calc_weight_count
@@ -9,7 +9,7 @@ import sys
 import os
 
 _processes = 8
-topology = [(6, sigmoid), (1, sigmoid)]
+topology = [(64, sigmoid), (32, sigmoid), (1, sigmoid)]
 
 class pongThread(Process):
     def __init__(self, id, output, population, input_size, topology):
@@ -21,27 +21,27 @@ class pongThread(Process):
         self.output = output
 
     def run(self):
-        # print('running {0}'.format(self.id))
+        print('running {0}'.format(self.id))
         self.output[self.id] = -np.array([games[self.id].play(
             FixedTopologyNeuralNetwork(
                 self.input_size, self.topology, ind)
                 ) for ind in self.population])
 
-#cma_es = CMA_ES_Active(np.zeros(calc_weight_count(6, topology)), 1.0)
-cma_es = load_obj(4700, 'models/cmaes_pong_v8')
+lm_ma_es = LM_MA_ES(np.zeros(calc_weight_count(128, topology)), 1.0)
+#lm_ma_es = load_obj(4700, 'models/cmaes_pong_v8')
     
 games = [PongGame() for i in range(_processes)]
 
-generation = 4700
+generation = 0
 
-while not cma_es.terminate():   
+while True:   
     generation += 1
     print('Generation:', generation)
-    population = cma_es.sample()
+    population = lm_ma_es.sample()
 
     chunks = np.array_split(population, _processes)
     results = Manager().list([None] * _processes)
-    threads = [pongThread(i, results, chunks[i], 6, topology) for i in range(_processes)]
+    threads = [pongThread(i, results, chunks[i], 128, topology) for i in range(_processes)]
 
     for th in threads:
         th.start()
@@ -52,11 +52,11 @@ while not cma_es.terminate():
     f_eval = np.concatenate(tuple(results))
     print(f_eval)
     print(f_eval.mean())
-    cma_es.update(population, f_eval)
+    lm_ma_es.update(population, f_eval)
  
 
     if generation % 100 == 0:
-        save_obj(cma_es, generation, 'models/cmaes_pong_v8')
+        save_obj(lm_ma_es, generation, 'models/lm_ma_es_pong_ram')
         #games[0].play_sample_game(FixedTopologyNeuralNetwork(6, topology, cma_es.sample()[0]))
 
 #v11 -> new fitness (+ 100 for winning), deterministic  -> topology = [(3, sigmoid), (1, sigmoid)]
