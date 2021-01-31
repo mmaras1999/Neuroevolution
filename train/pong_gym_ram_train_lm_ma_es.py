@@ -27,12 +27,12 @@ class pongThread(Process):
                 self.input_size, self.topology, ind)
                 ) for ind in self.population])
 
-lm_ma_es = LM_MA_ES(np.zeros(calc_weight_count(128, topology)), 1.0)
-#lm_ma_es = load_obj(4700, 'models/cmaes_pong_v8')
+#lm_ma_es = LM_MA_ES(np.zeros(calc_weight_count(128, topology)), 1.0)
+lm_ma_es = load_obj(8500, 'models/lm_ma_es_pong_ram')
     
 games = [PongGame() for i in range(_processes)]
 
-generation = 0
+generation = 8500
 
 while True:   
     generation += 1
