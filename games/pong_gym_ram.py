@@ -8,7 +8,7 @@ class PongGame:
         self.env = gym.make('Pong-ram-v0')
 
 
-    def make_move(self, prob):
+    def make_move(self, prob):        
         if np.random.uniform() < prob:
             return 2
         else:

@@ -65,14 +65,22 @@ class PongGame:
         return res
 
 
-    def make_move(self, prob):
-        if np.random.uniform() < prob:
-            return 2
-        else:
+    
+    def make_move_det(prob):
+        if prob < 0.5: # np.random.uniform():
             return 3
+        else:
+            return 2
+    
+    def make_move_rand(prob):
+        if prob < np.random.uniform():
+            return 3
+        else:
+            return 2
+
     
 
-    def play(self, network, render=False, wait=None):
+    def play(self, network, render=False, wait=None, move_fun=make_move_rand):
         observation = self.env.reset()
         self.score = 0.0 
         self.prev_ballx = 0
@@ -101,7 +109,7 @@ class PongGame:
 
             prob = network.eval(input)
             #prob = prob / prob.sum()
-            move = self.make_move(prob)
+            move = move_fun(prob)
 
             observation, reward, end, info = self.env.step(move)
     

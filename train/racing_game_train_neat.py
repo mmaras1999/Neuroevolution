@@ -26,11 +26,11 @@ class RacingProcess(Process):
 
 
 neat = Neat(6, 2)
-neat = load_obj(100, 'models/neat_race_v2')
+# neat = load_obj(100, 'models/neat_race_v2')
 
 games = [RacingGame() for i in range(_processes)]
 
-generation = 100
+generation = 
 
 while True:  
     generation += 1
@@ -59,4 +59,6 @@ while True:
         games[0].play(neat.bestgens[-1][2], render=True,  map_id=3)
         print(neat.bestgens[-1][0].nodesGens, neat.bestgens[-1][0].linksGens)
 
-
+#v1 learns on first map
+#v2 on seconds
+#v3 on third
