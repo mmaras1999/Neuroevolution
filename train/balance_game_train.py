@@ -10,7 +10,7 @@ import numpy as np
 import sys
 import os
 
-_processes = 8
+_processes = 4
 topology = [(4, sigmoid), (1, sigmoid)]
 
 class BalanceProcess(Process):
@@ -21,19 +21,18 @@ class BalanceProcess(Process):
         self.input_size = input_size
         self.output = output
         self.topology = topology
+        self.game = BalanceGame()
 
     def run(self):
         # print('running {0}'.format(self.id))
-        self.output[self.id] = -np.array([games[self.id].play(
+        self.output[self.id] = -np.array([self.game.play(
             FixedTopologyNeuralNetwork(
                 self.input_size, self.topology, ind)
                 ) for ind in self.population])
 
 
-cma_es = CMA_ES_Active(np.zeros(calc_weight_count(4, topology)), 1)
-
-games = [BalanceGame() for i in range(_processes)]
-
+cma_es = CMA_ES_Active(np.zeros(calc_weight_count(4, topology)), 1, popsize=32)
+game = BalanceGame()
 generation = 0
 
 while True:  
@@ -56,9 +55,10 @@ while True:
     print(f_eval.mean(), f_eval.max(), f_eval.min())
     cma_es.update(population, f_eval)
 
-    if generation % 10 == 0:
-        save_obj(cma_es, generation, 'models/cmaes_balance_v2')
-        games[0].play(FixedTopologyNeuralNetwork(4, topology, cma_es.sample()[0]), render=True, games_amount=1)
+    if generation % 20 == 0:
+        save_obj(cma_es, generation, 'models/cmaes_balance_v3')
+        game.play(FixedTopologyNeuralNetwork(4, topology, cma_es.sample()[0]), render=True, games_amount=1)
 
 #v1 - 10 random games
 #v2 - 25 specific games -> 200 iterations
+#v3 same as #v25 but games are created in threads

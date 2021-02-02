@@ -10,7 +10,7 @@ import numpy as np
 import sys
 import os
 
-_processes = 8
+_processes = 4
 
 class BalanceProcess(Process):
     def __init__(self, id, output, population, input_size):
@@ -19,22 +19,15 @@ class BalanceProcess(Process):
         self.population = population
         self.input_size = input_size
         self.output = output
+        self.game = BalanceGame()
 
     def run(self):
         # print('running {0}'.format(self.id))
-        self.output[self.id] = np.array([games[self.id].play(ind, move_fun=BalanceGame.make_move_det) for ind in self.population])
+        self.output[self.id] = np.array([self.game.play(ind, move_fun=BalanceGame.make_move_det) for ind in self.population])
 
 
 neat = Neat(4, 1)
-# neat = load_obj(175, 'models/neat_pong_v5')
-
-# for spe in neat.species:
-#     print("spe")
-#     for gen in spe.population:
-#         print(len(gen.nodesGens), len(gen.linksGens), end='\t')
-
-games = [BalanceGame() for i in range(_processes)]
-
+game = BalanceGame()
 generation = 0
 
 while True:  
@@ -53,16 +46,17 @@ while True:
         th.join()
 
     f_eval = np.concatenate(tuple(results))
-    # print(f_eval)
+    print(f_eval)
     print(f_eval.mean(), f_eval.max(), f_eval.min())
     neat.update(f_eval, verbose=True) #neat maximize function evals
 
-    if generation % 5 == 0:
-        save_obj(neat, generation, 'models/neat_balance_v2')
+    if generation % 10 == 0:
+        save_obj(neat, generation, 'models/neat_balance_v3')
         print(neat.bestgens[-1][0].nodesGens, neat.bestgens[-1][0].linksGens)
-        games[0].play(neat.bestgens[-1][2], render=True, games_amount=1)
+        game.play(neat.bestgens[-1][2], render=True, games_amount=1)
 
 
 
 #v1 - 10 random games
 #v2 - 25 specific games 
+#v3 same as #v25 but games are created in threads
