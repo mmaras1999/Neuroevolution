@@ -1,5 +1,6 @@
 from games.pong_gym import PongGame
 from lib.cma_es import CMA_ES_Active
+from lib.lm_ma_es import LM_MA_ES
 from lib.activator_funcs import sigmoid
 from lib.fixed_top_nn import FixedTopologyNeuralNetwork
 from lib.utilities import save_obj, load_obj, calc_weight_count
@@ -8,7 +9,7 @@ import numpy as np
 import sys
 import os
 
-_processes = 8
+_processes = 4
 topology = [ (3, sigmoid), (1, sigmoid)]
 
 class pongThread(Process):
@@ -19,20 +20,21 @@ class pongThread(Process):
         self.input_size = input_size
         self.topology = topology
         self.output = output
+        self.game = PongGame()
 
     def run(self):
         # print('running {0}'.format(self.id))
         self.output[self.id] = -np.array([games[self.id].play(
             FixedTopologyNeuralNetwork(
                 self.input_size, self.topology, ind)
-                ,move_fun=PongGame.make_move_det) for ind in self.population])
+                ,move_fun=PongGame.make_move_rand) for ind in self.population])
 
 cma_es = CMA_ES_Active(np.zeros(calc_weight_count(6, topology)), 1.0, popsize=32)
-# cma_es = load_obj(200, 'models/cmaes_pong_v18')
+cma_es = load_obj(110, 'models/cmaes_pong_v22')
     
 games = [PongGame() for i in range(_processes)]
 
-generation = 0
+generation = 110
 
 while True:
     generation += 1
@@ -56,8 +58,8 @@ while True:
  
 
     if generation % 10 == 0:
-        save_obj(cma_es, generation, 'models/cmaes_pong_v19')
-        games[0].play(FixedTopologyNeuralNetwork(6, topology, cma_es.sample()[0]), render=True, move_fun=PongGame.make_move_det)
+        save_obj(cma_es, generation, 'models/cmaes_pong_v22')
+        games[0].play(FixedTopologyNeuralNetwork(6, topology, cma_es.sample()[0]), render=True, move_fun=PongGame.make_move_rand)
 
 #popsize 32
 #v11 -> pong_v2 deterministic  -> topology = [(3, sigmoid), (1, sigmoid)]
@@ -70,6 +72,8 @@ while True:
 #popsize 32 topology = [(6, sigmoid), (3, sigmoid), (1, sigmoid)] #v15 #v16
 
 #popsize 32 normal pong [(3, sigmoid), (1, sigmoid)]]
-#v17, v19
-#v18
+#v17, v19 #21
+#v18, #v20 #22
+
+#v23 lm-ma-es
 

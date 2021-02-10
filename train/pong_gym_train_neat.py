@@ -10,7 +10,7 @@ import numpy as np
 import sys
 import os
 
-_processes = 5
+_processes = 8
 
 class PongProcess(Process):
     def __init__(self, id, output, population, input_size):
@@ -19,14 +19,15 @@ class PongProcess(Process):
         self.population = population
         self.input_size = input_size
         self.output = output
+        self.game = PongGame()
 
     def run(self):
         # print('running {0}'.format(self.id))
-        self.output[self.id] = np.array([games[self.id].play(ind) for ind in self.population])
+        self.output[self.id] = np.array([self.game.play(ind, move_fun=PongGame.make_move_det) for ind in self.population])
 
 
 neat = Neat(6, 1)
-# neat = load_obj(60, 'models/neat_pong_v2')
+# neat = load_obj(100, 'models/neat_pong_v1')
 
 # for spe in neat.species:
 #     print("spe")
@@ -58,13 +59,13 @@ while True:
     neat.update(f_eval, verbose=True) #neat maximize function evals
 
     if generation % 10 == 0:
-        save_obj(neat, generation, 'models/neat_pong_vwtf')
-        print(games[0].play(neat.bestgens[-1][2], render=True))
+        save_obj(neat, generation, 'models/neat_pong_v4')
+        print(games[0].play(neat.bestgens[-1][2], render=True, move_fun=PongGame.make_move_det))
         print(neat.bestgens[-1][0].nodesGens, neat.bestgens[-1][0].linksGens)
 
 
 
-#v1 -> detr move, game v2
+#v1 -> detr move, game v2, repeated in #v4
 #v2 -> rand move, game v2
 #v3 -> rand move, normal game
 #ram_v1 -> det move, ram game
