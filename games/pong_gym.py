@@ -78,9 +78,7 @@ class PongGame:
         else:
             return 2
 
-    
-
-    def play(self, network, render=False, wait=None, move_fun=make_move_rand):
+    def play(self, network, render=False, wait=None, move_fun=make_move_det):
         observation = self.env.reset()
         self.score = 0.0 
         self.prev_ballx = 0

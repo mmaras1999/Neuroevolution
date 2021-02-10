@@ -8,7 +8,7 @@ from lib.utilities import load_obj
 # model = load_obj(700, 'models/maes_racing_v1') 
 # scores = model.bestgens
 
-model = load_obj(6600, 'models/lm_ma_es_pong_ram')
+model = load_obj(14900, 'models/lm_ma_es_pong_ram')
 scores = [] 
 for scr in model.bestgens:
     scores.append(scr) 

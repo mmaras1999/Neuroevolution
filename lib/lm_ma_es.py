@@ -40,7 +40,7 @@ class LM_MA_ES:
         self.gen = 0
          
     def sample(self):
-        self.z = np.random.randn(self.lam, self.N)
+        self.z = np.random.standard_normal((self.lam, self.N))
         self.d = self.z.copy()
         
         for i in range(self.lam):
