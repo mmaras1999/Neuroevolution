@@ -28,3 +28,7 @@ For better code readability we suggest using VS Code with Better Comments addon
 ### Plotting
 
 Each model stores history of fitness values. You can plot them using *plot.py* script for LM-MA-ES, MA-ES and CMA-ES and *plot_neat.py* for NEAT - modify model's number and path in load_obj function to chose a particular model.
+
+### Models
+
+Models are described in the ```models_list.txt``` file (including paths to their directories).
