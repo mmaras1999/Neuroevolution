@@ -8,7 +8,7 @@ from lib.utilities import load_obj
 # model = load_obj(700, 'models/maes_racing_v1') 
 # scores = model.bestgens
 
-model = load_obj(5800, 'models/game2048/lm_ma_es_v3')
+model = load_obj(550, 'models/cmaes_pong_v18')
 scores = [] 
 for scr in model.bestgens:
     if type(scr) == tuple:
@@ -25,7 +25,7 @@ aver = 20
 plt.plot(range(aver-1, len(scores)), np.convolve(scores, np.ones(aver) / aver, mode='valid'), label=f'moving best avg {aver}')
 plt.plot(range(aver-1, len(model.genmeans)), np.convolve(model.genmeans, np.ones(aver) / aver, mode='valid'), label=f'moving mean avg {aver}')
 plt.legend()
-plt.savefig('plots/2048_lm_ma_es.png')
+# plt.savefig('plots/2048_lm_ma_es.png')
 plt.show()
 
 # very good pong - v11

@@ -203,9 +203,11 @@ class Game2048:
         self.board[position[0]][position[1]] = 2 if (r <= 75) else 4
 
     ### tries to perform a move, returns a score if lost, None otherwise
-    def make_move(self, prob):
-        move = np.random.choice(a=[0, 1, 2, 3], p=prob)
-        #move = np.argmax(prob)
+    def make_move(self, prob, moveDet):
+        if moveDet:
+            move = np.argmax(prob)
+        else:
+            move = np.random.choice(a=[0, 1, 2, 3], p=prob)
         self.lastMove = move
 
         ## check if move is valid
@@ -224,7 +226,7 @@ class Game2048:
 
         return None
 
-    def play(self, network, render=False, wait=None):
+    def play(self, network, render=False, wait=None, moveDet=False):
         score = 0
         for _ in range(10 if not render else 1):
             self.initMap()
@@ -244,7 +246,7 @@ class Game2048:
                 prob += 0.0001
                 # prob = np.array([0.25, 0.25, 0.25, 0.25])
                 prob = prob / prob.sum()
-                res = self.make_move(prob)
+                res = self.make_move(prob, moveDet)
 
                 if res is not None:
                     score += res

@@ -9,7 +9,7 @@ pygame.init()
 pygame.display.set_mode((1000, 1000))
 pygame.display.set_caption('2048 NN')
 
-lm_ma_es = load_obj(5800, 'models/game2048/lm_ma_es_v3')
+lm_ma_es = load_obj(5800, 'models/game2048/lm_ma_es_v2')
 game = Game2048()
 
 topology = [(17, sigmoid), (4, sigmoid)]

@@ -10,7 +10,7 @@ if len(sys.argv) > 1:
 
 bestIndiv = None
 bestIndivScore = None
-model = load_obj(500, 'models/cmaes_pong_v11') 
+model = load_obj(500, 'models/pong_gym_v2/cmaes_pong_gym_det')
 topology = [(3, sigmoid), (1, sigmoid)]
 
 for i in range(sampling_counts):

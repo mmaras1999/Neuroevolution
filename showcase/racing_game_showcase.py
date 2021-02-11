@@ -3,7 +3,7 @@ from lib.neat import Neat
 from lib.utilities import load_obj
 
 #model trained on first map
-neat = load_obj(200, 'models/neat_race_v1')
+neat = load_obj(200, 'models/car_racing/neat_race_v1')
 game = RacingGame()
 individual = neat.bestgens[-1][2]
 print('score on first map', game.play(individual, True, map_id=1))

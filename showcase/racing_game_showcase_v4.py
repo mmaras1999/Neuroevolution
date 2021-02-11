@@ -5,14 +5,14 @@ from lib.activator_funcs import sigmoid
 from lib.utilities import load_obj
 
 #model trained on third map
-cma_es = load_obj(700, 'models/cmaes_racing_v1')
+cma_es = load_obj(700, 'models/car_racing/cmaes_racing')
 game = RacingGame()
 
 topology = [(4, sigmoid), (2, sigmoid)]
 bestIndividual = None
 bestScore = None
 
-for i in range(50):
+for i in range(10):
     individual = FixedTopologyNeuralNetwork(6, topology, cma_es.sample()[0])
     score = game.play(individual, map_id=3)
     if not bestScore or bestScore < score:

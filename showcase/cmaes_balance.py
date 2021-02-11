@@ -10,7 +10,7 @@ if len(sys.argv) > 1:
 
 bestIndiv = None
 bestIndivScore = None
-model = load_obj(800, 'models/cmaes_balance_v3') 
+model = load_obj(800, 'models/cartpole/cmaes_cartpole') 
 game = BalanceGame()
 topology = [(4, sigmoid), (1, sigmoid)]
 
