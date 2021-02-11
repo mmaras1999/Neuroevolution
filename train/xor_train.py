@@ -23,16 +23,14 @@ class XorProcess(Process):
         self.output = output
 
     def run(self):
-        # print('running {0}'.format(self.id))
-        self.output[self.id] = np.array([games[self.id].play(ind) for ind in self.population])
+        game = XorGame()
+        self.output[self.id] = np.array([game.play(ind) for ind in self.population])
 
 
 meanGenerations = 0
 
 for i in range(20):
     neat = Neat(2, 1)
-
-    games = [XorGame() for i in range(_processes)]
 
     generation = 0
 
@@ -64,4 +62,3 @@ for i in range(20):
             break
 
 print(meanGenerations / 20)
-

@@ -38,6 +38,3 @@ class EnduroGame:
             
             if wait is not None:
                 time.sleep(wait)
-
-game = EnduroGame()
-print(game.play(None, True, 0.01))

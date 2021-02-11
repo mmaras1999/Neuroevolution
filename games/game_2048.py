@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, seed
 from pygame.locals import *
 import numpy as np
 import pygame
@@ -6,10 +6,11 @@ import time
 
 class Game2048:
     ### initializes the 2048 Game class
-    def __init__(self):
-        pygame.init()
-        pygame.display.set_mode((1000, 1000))
-        pygame.display.set_caption('2048 NN')
+    def __init__(self, random_seed=None):
+        
+        if random_seed is not None:
+            seed(random_seed)
+
         self.fontBig = pygame.font.SysFont('robotobold', 128)
         self.fontNorm = pygame.font.SysFont('robotoextrabold', 48)
         self.colors = [(255, 255, 255), 
@@ -203,8 +204,8 @@ class Game2048:
 
     ### tries to perform a move, returns a score if lost, None otherwise
     def make_move(self, prob):
-        # move = np.random.choice(a=[0, 1, 2, 3], p=prob)
-        move = np.argmax(prob)
+        move = np.random.choice(a=[0, 1, 2, 3], p=prob)
+        #move = np.argmax(prob)
         self.lastMove = move
 
         ## check if move is valid
@@ -277,6 +278,3 @@ class Game2048:
                     bzzt = self.fontNorm.render('{0}'.format(2 ** nums[4 * i + j]), True, (75, 75, 75))
                     rct = bzzt.get_rect(center=(x + 90, y + 90))
                     screen.blit(bzzt, rct)
-
-# game = Game2048()
-# game.play(None, True, 1)

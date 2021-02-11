@@ -9,4 +9,4 @@ cma_es = load_obj(4700, 'models/cmaes_pong_v8')
     
 game = PongGame()
 individual = cma_es.sample()[0]
-game.play(FixedTopologyNeuralNetwork(6, topology, individual), True, wait=0.03)
+game.play(FixedTopologyNeuralNetwork(6, topology, individual), True)

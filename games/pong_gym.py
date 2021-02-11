@@ -63,8 +63,6 @@ class PongGame:
         self.prev_bally = bally
 
         return res
-
-
     
     def make_move_det(prob):
         if prob < 0.5: # np.random.uniform():

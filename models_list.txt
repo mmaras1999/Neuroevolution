@@ -1,0 +1,41 @@
+Available models:
+
+beamrider:
+beamrider/lm_ma_es_beamrider -- LM-MA-ES trained to play Beamrider
+beamrider/neat_beamrider -- NEAT trained to play Beamrider
+
+car_racing:
+car_racing/cmaes_car_racing -- CMA-ES trained to play CarRacing on track 3
+car_racing/maes_car_racing -- MA-ES trained to play CarRacing on track 3
+car_racing/neat_race_v1 -- NEAT trained to play CarRacing on track 1
+car_racing/neat_race_v2 -- NEAT trained to play CarRacing on track 2
+car_racing/neat_race_v3 -- NEAT trained to play CarRacing on track 3
+
+cartpole:
+cartpole/cma_es_cartpole -- CMA-ES trained to play CartPole
+cartpole/lm_ma_es_cartpole -- LM-MA-ES trained to play CartPole
+cartpole/neat_cartpole -- NEAT trained to play CartPole
+
+pong:
+
+pong_gym:
+pong_gym/neat_pong_gym -- NEAT trained to play Atari Gym's Pong
+pong_gym/lm_ma_es_pong_gym -- LM-MA-ES trained to play Atari Gym's Pong
+
+pong_gym_v2:
+pong_gym_v2/neat_pong_gym_det -- NEAT trained to play Atari Gym's Pong with deterministic movement
+pong_gym_v2/neat_pong_gym_det_2 -- NEAT trained to play Atari Gym's Pong with deterministic movment (same as the previous one)
+pong_gym_v2/neat_pong_gym_rand -- NEAT trained to play Atari Gym's Pong with random moves sampled from the policy distribution
+pong_gym_v2/cmaes_pong_gym_det -- CMA-ES trained to play Atari Gym's Pong with deterministic movement
+pong_gym_v2/cmaes_pong_gym_rand -- CMA-ES trained to play Atari Gym's Pong with random moves sampled from the policy distribution
+
+pong_gym_ram:
+pong_gym_ram/lm_ma_es_pong_ram -- LM-MA-ES trained to play Atari Gym's Pong with RAM as input
+pong_gym_ram/neat_pong_ram -- NEAT trained to play Atari Gym's Pong with RAM as input
+
+game2048:
+game2048/lm_ma_es_v1 -- LM-MA-ES trained to play 2048 game
+game2048/lm_ma_es_v2 -- LM-MA-ES trained to play 2048 game with seed = 59
+game2048/neat -- NEAT trained to play 2048 game
+
+xor/* -- models trained to solve XOR problem (for testing)

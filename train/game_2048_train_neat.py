@@ -4,11 +4,16 @@ from lib.activator_funcs import sigmoid
 from lib.fixed_top_nn import FixedTopologyNeuralNetwork
 from lib.utilities import save_obj, load_obj, calc_weight_count
 from multiprocessing import Process, Manager
+import pygame
 import numpy as np
 import sys
 import os
 
 _processes = 8
+
+pygame.init()
+pygame.display.set_mode((1000, 1000))
+pygame.display.set_caption('2048 NN')
 
 class game2048Thread(Process):
     def __init__(self, id, output, population, input_size):
@@ -19,14 +24,11 @@ class game2048Thread(Process):
         self.output = output
 
     def run(self):
-        print('running {0}'.format(self.id))
-        self.output[self.id] = np.array([games[self.id].play(
+        game = Game2048()
+        self.output[self.id] = np.array([game.play(
             ind) for ind in self.population])
 
-neat = Neat(16, 4)
-#lm_ma_es = load_obj(1500, 'models/beamrider/lm_ma_es_v1')
-    
-games = [Game2048() for i in range(_processes)]
+neat = Neat(17, 4)
 
 generation = 0
 
@@ -51,5 +53,4 @@ while True:
     neat.update(f_eval)
 
     if generation % 100 == 0:
-        save_obj(neat, generation, 'models/game2048/neat_v1')
-
+        save_obj(neat, generation, 'models/game2048/neat')

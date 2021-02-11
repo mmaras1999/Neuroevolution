@@ -33,13 +33,11 @@ class Vector:
         return Vector(self.x * math.cos(angle) + self.y * math.sin(angle),
                       self.x * -math.sin(angle) + self.y * math.cos(angle))
 
-
 class Line:
     def __init__(self, x1, y1, x2, y2):
         self.a = Vector(x1, y1)
         self.b = Vector(x2, y2)
     
-
     def distanceFromPoint(self, p):
         return abs((self.a - p).cross(self.a - self.b)) / (self.a - self.b).length()
 
@@ -56,10 +54,8 @@ class Line:
             return None
         return (self.a - other.a).cross(otherDir) / cr
 
-
 def VectorFromAngle(angle):
     return Vector(math.cos(angle), -math.sin(angle))
-
 
 class RacingGame:
     class Car:
@@ -493,11 +489,8 @@ class RacingGame:
         
         return self.checkpointPassed * 1100 +  1100 - self.distanceToCheckpoint
                     
-
-
-
+                    
 
 if __name__ == "__main__":
-    print("heloł")
     game = RacingGame()
     print(game.test())

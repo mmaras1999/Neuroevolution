@@ -6,7 +6,7 @@ from pygame.locals import *
 import numpy as np
 import pickle
 
-def botBob(state):
+def defaultBot(state):
     myX, othX, bX, bY, bDX, bDY = state
     if bDY > 0:
         if myX < 400:
@@ -64,8 +64,7 @@ class PongGame:
     
     def getGameStateRev(self):
         return self.pads[1].pos.centerx, self.pads[0].pos.centerx, self.ball.pos.centerx, self.board.get_height() - self.ball.pos.centery, self.ball.dx, -self.ball.dy
-
-  
+ 
     def play_two_bots(self, inp1, inp2, draw=False, MAX_ROUNDS=10**4):
         self.init_game()
 
@@ -97,7 +96,7 @@ class PongGame:
     def play(self, NN):
         score = 0
         for i in range(10):
-            rounds, win = self.play_two_bots(get_NN_bot(NN), botBob)
+            rounds, win = self.play_two_bots(get_NN_bot(NN), defaultBot)
             if win == PongGame.State.WIN_TOP:
                 score += 30000 - rounds + abs(self.pads[1].pos.centerx - self.ball.pos.centerx)
             if win == PongGame.State.WIN_BOT:
@@ -107,9 +106,9 @@ class PongGame:
         return score / (10**4) / 10
 
     def play_sample_game(self, NN):
-        self.play_two_bots(get_NN_bot(NN), botBob, draw=True, MAX_ROUNDS=2000)
+        self.play_two_bots(get_NN_bot(NN), defaultBot, draw=True, MAX_ROUNDS=2000)
 
-    def play_with_bot(self, bot=botBob):
+    def play_with_bot(self, bot=defaultBot):
         self.__init__()
 
         clock = pygame.time.Clock()
@@ -138,7 +137,6 @@ class PongGame:
     def play_with_NN(self, NN):
         self.play_with_bot(get_NN_bot(NN))
 
-
 class Ball:
     def __init__(self, game):
         self.pos = pygame.Rect(game.board.get_width() / 2, game.board.get_height() / 2, 25, 25)
@@ -154,7 +152,6 @@ class Ball:
         self.pos = self.pos.move(self.dx, self.dy)
         self.speed += 1 / 500
 
-      
         #bounce from map borders
         if self.pos.left < 0:   
             self.pos.left = -self.pos.left
@@ -183,10 +180,8 @@ class Ball:
                 self.angle = math.pi / 2 - math.pi / 3 * diff
                 self.pos.bottom -= 2 * (self.pos.bottom - self.game.pads[1].pos.top)
 
-
     def draw(self, screen):
         pygame.draw.rect(screen, (255,255,255), self.pos)
-
 
 class Pad:
     def __init__(self, game, y):
@@ -234,7 +229,6 @@ def bot(state):
         if myX + 30 > bX:
             return -1
         return 0
-
 
 def get_NN_bot(NN):
     def make_move(prob):

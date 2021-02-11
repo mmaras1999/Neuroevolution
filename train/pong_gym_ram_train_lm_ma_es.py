@@ -22,16 +22,16 @@ class pongThread(Process):
 
     def run(self):
         game = PongGame()
-        print('running {0}'.format(self.id))
+        print('running process {0}'.format(self.id))
         self.output[self.id] = -np.array([game.play(
             FixedTopologyNeuralNetwork(
                 self.input_size, self.topology, ind)
                 ) for ind in self.population])
 
 #lm_ma_es = LM_MA_ES(np.zeros(calc_weight_count(128, topology)), 1.0)
-lm_ma_es = load_obj(14900, 'models/lm_ma_es_pong_ram')
+lm_ma_es = load_obj(15900, 'models/pong_gym_ram/lm_ma_es_pong_ram')
 
-generation = 14900
+generation = 15900
 
 while True:   
     generation += 1
@@ -54,9 +54,5 @@ while True:
     lm_ma_es.update(population, f_eval)
  
     if generation % 100 == 0:
-        save_obj(lm_ma_es, generation, 'models/lm_ma_es_pong_ram')
-        #games[0].play_sample_game(FixedTopologyNeuralNetwork(6, topology, cma_es.sample()[0]))
-
-#v11 -> new fitness (+ 100 for winning), deterministic  -> topology = [(3, sigmoid), (1, sigmoid)]
-#v12 -> new fitness, random: 700 iteration, no improvement :( -> topology = [(3, sigmoid), (1, sigmoid)]
-#v13 -> new fitness, deterministic:( -> topology = [(6, sigmoid), (1, sigmoid)] TODO
+        save_obj(lm_ma_es, generation, 'models/pong_gym_ram/lm_ma_es_pong_ram')
+ 

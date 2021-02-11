@@ -1,8 +1,6 @@
 import numpy as np
 import scipy
 import scipy.linalg
-#import plotly.graph_objs as go
-#import plotly.express as px
 
 class LM_MA_ES:
         

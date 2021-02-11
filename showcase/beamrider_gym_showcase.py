@@ -14,4 +14,4 @@ lm_ma_es = load_obj(3100, 'models/beamrider/lm_ma_es_v1')
     
 game = BeamRiderGame()
 individual = lm_ma_es.sample()[0]
-game.play(FixedTopologyNeuralNetwork(128, topology, individual), True, wait=0.1)
+game.play(FixedTopologyNeuralNetwork(128, topology, individual), True, wait=0.01)

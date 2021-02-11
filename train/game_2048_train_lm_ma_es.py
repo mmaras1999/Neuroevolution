@@ -4,12 +4,17 @@ from lib.activator_funcs import sigmoid
 from lib.fixed_top_nn import FixedTopologyNeuralNetwork
 from lib.utilities import save_obj, load_obj, calc_weight_count
 from multiprocessing import Process, Manager
+import pygame
 import numpy as np
 import sys
 import os
 
 _processes = 8
-topology = [(16, sigmoid), (4, sigmoid)]
+topology = [(17, sigmoid), (4, sigmoid)]
+
+pygame.init()
+pygame.display.set_mode((1000, 1000))
+pygame.display.set_caption('2048 NN')
 
 class game2048Thread(Process):
     def __init__(self, id, output, population, input_size, topology):
@@ -21,16 +26,15 @@ class game2048Thread(Process):
         self.output = output
 
     def run(self):
-        print('running {0}'.format(self.id))
-        self.output[self.id] = -np.array([games[self.id].play(
+        print('running process {0}'.format(self.id))
+        game = Game2048()
+        self.output[self.id] = -np.array([game.play(
             FixedTopologyNeuralNetwork(
                 self.input_size, self.topology, ind)
                 ) for ind in self.population])
 
-lm_ma_es = LM_MA_ES(np.zeros(calc_weight_count(16, topology)), 1.0, popsize=300)
-#lm_ma_es = load_obj(1500, 'models/beamrider/lm_ma_es_v1')
-    
-games = [Game2048() for i in range(_processes)]
+lm_ma_es = LM_MA_ES(np.zeros(calc_weight_count(17, topology)), 1.0, popsize=100)
+#lm_ma_es = load_obj(100, 'models/game2048/lm_ma_es_v1')
 
 generation = 0
 
@@ -41,7 +45,7 @@ while True:
 
     chunks = np.array_split(population, _processes)
     results = Manager().list([None] * _processes)
-    threads = [game2048Thread(i, results, chunks[i], 16, topology) for i in range(_processes)]
+    threads = [game2048Thread(i, results, chunks[i], 17, topology) for i in range(_processes)]
 
     for th in threads:
         th.start()
@@ -55,5 +59,5 @@ while True:
     lm_ma_es.update(population, f_eval)
 
     if generation % 100 == 0:
-        save_obj(lm_ma_es, generation, 'models/game2048/lm_ma_es_v1')
+        save_obj(lm_ma_es, generation, 'models/game2048/lm_ma_es_v3')
 

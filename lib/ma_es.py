@@ -70,7 +70,6 @@ class MA_ES:
         self.sigma = self.sigma * np.exp(self.cs / self.damps * (np.linalg.norm(self.ps) / self.chiN - 1))
         
     def terminate(self):
-        """Zakoncz algorytm"""
         if self.counteval <= 0:
             return False
         if self.counteval >= self.maxfevals:

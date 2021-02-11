@@ -22,15 +22,14 @@ class RacingProcess(Process):
 
     def run(self):
         # print('running {0}'.format(self.id))
-        self.output[self.id] = np.array([games[self.id].play(ind, map_id=2) for ind in self.population])
+        game = RacingGame()
+        self.output[self.id] = np.array([game.play(ind, map_id=2) for ind in self.population])
 
 
 neat = Neat(6, 2)
-# neat = load_obj(100, 'models/neat_race_v2')
+# neat = load_obj(100, 'models/car_racing/neat_race_v2')
 
-games = [RacingGame() for i in range(_processes)]
-
-generation = 
+generation = 0
 
 while True:  
     generation += 1
@@ -53,7 +52,7 @@ while True:
     neat.update(f_eval, verbose=True) #neat maximize function evals
 
     if generation % 5 == 0:
-        save_obj(neat, generation, 'models/neat_race_v2')
+        save_obj(neat, generation, 'models/car_racing/neat_race_v2')
         games[0].play(neat.bestgens[-1][2], render=True,  map_id=1)
         games[0].play(neat.bestgens[-1][2], render=True,  map_id=2)
         games[0].play(neat.bestgens[-1][2], render=True,  map_id=3)

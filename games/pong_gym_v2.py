@@ -82,7 +82,6 @@ class PongGame:
 
         return res
 
-
     def make_move_det(prob):
         if prob < 0.5: # np.random.uniform():
             return 3
@@ -94,8 +93,6 @@ class PongGame:
             return 3
         else:
             return 2
-
-    
 
     def play(self, network, render=False, wait=None, move_fun=make_move_rand):
         observation = self.env.reset()

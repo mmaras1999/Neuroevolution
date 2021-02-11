@@ -18,17 +18,13 @@ class beamriderThread(Process):
         self.output = output
 
     def run(self):
-        # print('running {0}'.format(self.id))
-        self.output[self.id] = np.array([games[self.id].play(ind) for ind in self.population])
+        game = BeamRiderGame()
+        self.output[self.id] = np.array([game.play(ind) for ind in self.population])
 
-#cma_es = CMA_ES_Active(np.zeros(calc_weight_count(128, topology)), 1.0)
-# cma_es = load_obj(250, 'models/beamrider/cmaes_v0')
 neat = Neat(128, 4)
-neat = load_obj(10, 'models/beamrider_neat_v1')
+neat = load_obj(550, 'models/beamrider/neat_beamrider')
     
-games = [BeamRiderGame() for i in range(_processes)]
-
-generation = 10
+generation = 550
 
 while True:
     generation += 1
@@ -52,6 +48,6 @@ while True:
  
 
     if generation % 10 == 0:
-        save_obj(neat, generation, 'models/beamrider_neat_v1')
-        games[0].play(neat.bestgens[-1][2], render=True)
+        save_obj(neat, generation, 'models/beamrider/neat_beamrider')
+        # games[0].play(neat.bestgens[-1][2], render=True)
 

@@ -1,9 +1,7 @@
 from games.pong_gym_v2 import PongGame
 from lib.neat import Neat
 from lib.custom_top_nn import CustomTopologyNeuralNetwork as NN
-from lib.cma_es import CMA_ES_Active
 from lib.activator_funcs import sigmoid
-from lib.fixed_top_nn import FixedTopologyNeuralNetwork
 from lib.utilities import save_obj, load_obj, calc_weight_count
 from multiprocessing import Process, Manager
 import numpy as np
@@ -22,7 +20,6 @@ class PongProcess(Process):
         self.game = PongGame()
 
     def run(self):
-        # print('running {0}'.format(self.id))
         self.output[self.id] = np.array([self.game.play(ind, move_fun=PongGame.make_move_det) for ind in self.population])
 
 
@@ -33,8 +30,6 @@ neat = Neat(6, 1)
 #     print("spe")
 #     for gen in spe.population:
 #         print(len(gen.nodesGens), len(gen.linksGens), end='\t')
-
-games = [PongGame() for i in range(_processes)]
 
 generation = 0
 
@@ -60,13 +55,5 @@ while True:
 
     if generation % 10 == 0:
         save_obj(neat, generation, 'models/neat_pong_v4')
-        print(games[0].play(neat.bestgens[-1][2], render=True, move_fun=PongGame.make_move_det))
         print(neat.bestgens[-1][0].nodesGens, neat.bestgens[-1][0].linksGens)
-
-
-
-#v1 -> detr move, game v2, repeated in #v4
-#v2 -> rand move, game v2
-#v3 -> rand move, normal game
-#ram_v1 -> det move, ram game
 

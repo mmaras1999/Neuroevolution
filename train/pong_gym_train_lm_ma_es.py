@@ -22,14 +22,14 @@ class pongThread(Process):
 
     def run(self):
         game = PongGame()
-        print('running {0}'.format(self.id))
+        print('running process {0}'.format(self.id))
         self.output[self.id] = -np.array([game.play(
             FixedTopologyNeuralNetwork(
                 self.input_size, self.topology, ind)
                 ) for ind in self.population])
 
 lm_ma_es = LM_MA_ES(np.zeros(calc_weight_count(6, topology)), 1.0)
-# cma_es = load_obj(200, 'models/cmaes_pong_v18')
+# lm_ma_es = load_obj(200, 'models/pong_gym/lm_ma_es_pong_gym')
 
 generation = 0
 
@@ -55,20 +55,4 @@ while True:
  
 
     if generation % 100 == 0:
-        save_obj(lm_ma_es, generation, 'models/lm_ma_es_pong')
-        #games[0].play(FixedTopologyNeuralNetwork(6, topology, lm_ma_es.sample()[0]), render=True, move_fun=PongGame.make_move_det)
-
-#popsize 32
-#v11 -> pong_v2 deterministic  -> topology = [(3, sigmoid), (1, sigmoid)]
-#v12 -> pong_v2, random -> topology = [(3, sigmoid), (1, sigmoid)]
-
-#popsize 16 (deafullt for cmaes)
-#v13 -> same as v11
-#v14 -> same as v12
-
-#popsize 32 topology = [(6, sigmoid), (3, sigmoid), (1, sigmoid)] #v15 #v16
-
-#popsize 32 normal pong [(3, sigmoid), (1, sigmoid)]]
-#v17, v19
-#v18
-
+        save_obj(lm_ma_es, generation, 'models/pong_gym/lm_ma_es_pong_gym')

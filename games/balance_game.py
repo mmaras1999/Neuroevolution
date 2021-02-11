@@ -12,6 +12,7 @@ class BalanceGame:
             return 0
         else:
             return 1
+            
     def make_move_rand(prob):
         if np.random.uniform() < prob:
             return 0
