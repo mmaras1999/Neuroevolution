@@ -1,5 +1,4 @@
 from games.beamrider_gym import BeamRiderGame
-from lib.cma_es import CMA_ES_Active
 from lib.activator_funcs import sigmoid
 from lib.fixed_top_nn import FixedTopologyNeuralNetwork
 from lib.utilities import save_obj, load_obj, calc_weight_count
@@ -10,7 +9,7 @@ import sys
 import os
 
 topology = [(64, sigmoid), (64, sigmoid), (4, sigmoid)]
-lm_ma_es = load_obj(3100, 'models/beamrider/lm_ma_es_v1')
+lm_ma_es = load_obj(3000, 'models/beamrider/lm_ma_es_beamrider')
     
 game = BeamRiderGame()
 individual = lm_ma_es.sample()[0]
