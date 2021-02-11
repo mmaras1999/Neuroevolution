@@ -4,12 +4,9 @@ import pickle
 import matplotlib.pyplot as plt
 from lib.utilities import load_obj
 
-
-# model = load_obj(700, 'models/maes_racing_v1') 
-# scores = model.bestgens
-
 model = load_obj(550, 'models/cmaes_pong_v18')
 scores = [] 
+
 for scr in model.bestgens:
     if type(scr) == tuple:
         scores.append(-scr[1]) 
@@ -27,5 +24,3 @@ plt.plot(range(aver-1, len(model.genmeans)), np.convolve(model.genmeans, np.ones
 plt.legend()
 # plt.savefig('plots/2048_lm_ma_es.png')
 plt.show()
-
-# very good pong - v11
