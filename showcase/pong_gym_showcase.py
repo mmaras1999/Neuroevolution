@@ -5,7 +5,7 @@ from lib.utilities import load_obj
 
 
 topology = [(6, sigmoid), (1, sigmoid)]
-cma_es = load_obj(4700, 'models/cmaes_pong_v8')
+cma_es = load_obj(4700, 'models/pong_gym/cmaes_pong_gym_rand_3')
     
 game = PongGame()
 individual = cma_es.sample()[0]

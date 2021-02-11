@@ -7,7 +7,7 @@ from lib.utilities import load_obj
 #neural network bot is on top
 
 topology = [(6, sigmoid), (3, sigmoid), (1, sigmoid)]
-cma_es = load_obj(1000, 'models/cmaes_pong_v6')
+cma_es = load_obj(1000, 'models/pong/cmaes_pong')
     
 game = PongGame()
 individual = cma_es.sample()[0]
