@@ -18,3 +18,13 @@ The following libraries are necessary to run the project:
 The project was tested on Python3 v.3.8.5
 
 For better code readability we suggest using VS Code with Better Comments addon
+
+### How to run
+
+1. Go to the project's main directory
+2. Run setup.sh script using the following command: ```. ./setup.sh```
+3. You can preview model's performance by running scripts in *showcase* directory. You can train new or existing models using scripts in *train* directory.
+
+### Plotting
+
+Each model stores history of fitness values. You can plot them using *plot.py* script for LM-MA-ES, MA-ES and CMA-ES and *plot_neat.py* for NEAT - modify model's number and path in load_obj function to chose a particular model.
