@@ -8,15 +8,15 @@ from lib.utilities import load_obj
 # model = load_obj(700, 'models/maes_racing_v1') 
 # scores = model.bestgens
 
-model = load_obj(5800, 'models/game2048/lm_ma_es_v3')
+model = load_obj(3800, 'models/game2048/neat_v3_light')
 scores = [] 
 for scr in model.bestgens:
     if type(scr) == tuple:
-        scores.append(-scr[1]) 
+        scores.append(scr[1]) 
     else:
-        scores.append(-scr)
+        scores.append(scr)
 
-model.genmeans = -np.array(model.genmeans)
+model.genmeans = np.array(model.genmeans)
 
 plt.plot(scores, label='best')
 plt.plot(model.genmeans, label='mean')
