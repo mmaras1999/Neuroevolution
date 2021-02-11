@@ -10,7 +10,7 @@ import sys
 import os
 
 topology = [(64, sigmoid), (64, sigmoid), (4, sigmoid)]
-lm_ma_es = load_obj(3100, 'models/beamrider/lm_ma_es_v1')
+lm_ma_es = load_obj(3400, 'models/beamrider/lm_ma_es_beamrider')
     
 game = BeamRiderGame()
 individual = lm_ma_es.sample()[0]
